@@ -1,3 +1,14 @@
 # English strings go here for Rails i18n
 en:
-  # my_label: "My label"
+  ev_document_added: Document added.
+  ev_file_added: File added.
+  ev_issue_added: Issue added.
+  ev_issue_updated: Issue updated.
+  ev_issue_note_added: Issue notes added.
+  ev_issue_status_updated: Issue status changed.
+  ev_issue_priority_updated: Issue priority changed.
+  ev_message_posted: Message posted.
+  ev_news_added: News added.
+  ev_wiki_content_added: Wiki added.
+  ev_wiki_content_updated: Wiki updated.
+

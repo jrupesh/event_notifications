@@ -1,3 +1,6 @@
+require 'patches/users_helper_patch'
+require 'patches/user_patch'
+
 Redmine::Plugin.register :event_notifications do
   name 'Event Notifications plugin'
   author 'Rupesh J'

@@ -12,11 +12,13 @@
         content_tag('label', 
           check_box_tag(
             'user[notified_project_ids][]',
-             project.id,
+             {project.id => project.name},
              @user.notified_projects_ids.include?(project.id),
-             :id => nil
-          ) + ' ' + h(project.name)
-        )
+             :id => nil, :onchange => 'if (this.checked == true) {$( this ).parent().next().show();}
+                                        else {$( this ).parent().next().hide();}'
+             ) + ' ' + h(project.name)
+        ) +  
+        render_project_events_lists(project)
       end %>
   <%= hidden_field_tag 'user[notified_project_ids][]', '' %>
   <p><em class="info"><%= l(:text_user_mail_option) %></em></p>
