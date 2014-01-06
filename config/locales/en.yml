@@ -12,3 +12,5 @@ en:
   ev_wiki_content_added: Wiki added.
   ev_wiki_content_updated: Wiki updated.
 
+  enable_event_notifications_settings: Enable Event notification plugin.
+  enable_event_notifications_settings_description: If true; emails are sent to receipients on creation or updation of events checked by user.

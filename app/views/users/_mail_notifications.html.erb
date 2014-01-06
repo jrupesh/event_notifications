@@ -9,17 +9,25 @@
 </p>
 <%= content_tag 'div', :id => 'notified-projects', :style => (@user.mail_notification == 'selected' ? '' : 'display:none;') do %>
   <%= render_project_nested_lists(@user.projects) do |project|
+
+        if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
+          value =  {project.id => project.name}
+          html_opts = { :id => nil, :onchange => 'if (this.checked == true) {$( this ).parent().next().show();}
+                                        else {$( this ).parent().next().hide();}' }
+        else
+          value = project.id
+          html_opts = { :id => nil }
+        end
         bool_val = @user.notified_projects_ids.include?(project.id)
+
         content_tag('label', 
           check_box_tag(
             'user[notified_project_ids][]',
-             {project.id => project.name},
+             value,
              bool_val,
-             :id => nil, :onchange => 'if (this.checked == true) {$( this ).parent().next().show();}
-                                        else {$( this ).parent().next().hide();}'
+             html_opts
              ) + ' ' + h(project.name)
-        ) +  
-        render_project_events_lists(project, bool_val)
+        ) +  render_project_events_lists(project, bool_val) 
       end %>
   <%= hidden_field_tag 'user[notified_project_ids][]', '' %>
   <p><em class="info"><%= l(:text_user_mail_option) %></em></p>
