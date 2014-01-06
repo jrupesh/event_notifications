@@ -24,7 +24,9 @@ module Patches
         end
         notified = notified.select {|u| u.active? && u.notify_about?(self)}
 
-        notified += project.notified_users(self)
+        notified += Setting.plugin_event_notifications["enable_event_notifications"] == "on" ? project.notified_users(self) :
+             project.notified_users
+
         notified.uniq!
         # Remove users that can not view the issue
         notified.reject! {|user| !visible?(user)}

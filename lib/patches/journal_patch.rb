@@ -13,7 +13,9 @@ module Patches
       def notified_users
         notified = journalized.notified_users
         notified = notified.select {|u| u.active? && u.notify_about?(self)}
-        notified += journalized.project.notified_users(self)
+        notified += Setting.plugin_event_notifications["enable_event_notifications"] == "on" ? journalized.project.notified_users(self) :
+             journalized.project.notified_users
+
         notified.uniq!
 
         if private_notes?

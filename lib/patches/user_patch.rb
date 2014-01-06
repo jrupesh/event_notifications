@@ -14,20 +14,24 @@ module Patches
     module InstanceMethods
       #TODO : Check Project#notified_users. This needs to be aliased to user#notify_about?
       def update_notified_project_ids_with_events
-        if @notified_projects_ids_changed
-          logger.debug("PATCH - update_notified_project_ids notified_projects_ids #{notified_projects_ids}")
-          ids = (mail_notification == 'selected' ? Array.wrap(notified_projects_ids).reject(&:blank?) : [])
-          ids_hash = {}
-          ids.each do |h|
-            eval(h).each do |key, value|
-              ids_hash.has_key?(key) ? ids_hash[key] << value : ids_hash[key] = [value]
+        if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
+          if @notified_projects_ids_changed
+            logger.debug("PATCH - update_notified_project_ids notified_projects_ids #{notified_projects_ids}")
+            ids = (mail_notification == 'selected' ? Array.wrap(notified_projects_ids).reject(&:blank?) : [])
+            ids_hash = {}
+            ids.each do |h|
+              eval(h).each do |key, value|
+                ids_hash.has_key?(key) ? ids_hash[key] << value : ids_hash[key] = [value]
+              end
+            end
+            members.update_all(:mail_notification => false)
+            if ids_hash.keys.any?
+              members.where(:project_id => ids_hash.keys).update_all(:mail_notification => true)
+              members.each { |m| m.update_attributes!(:events => ids_hash[m.project_id]) if ids_hash.keys.include?(m.project_id) }
             end
           end
-          members.update_all(:mail_notification => false)
-          if ids_hash.keys.any?
-            members.where(:project_id => ids_hash.keys).update_all(:mail_notification => true)
-            members.each { |m| m.update_attributes!(:events => ids_hash[m.project_id]) if ids_hash.keys.include?(m.project_id) }
-          end
+        else
+          update_notified_project_ids_without_events
         end
       end
 
@@ -77,31 +81,34 @@ module Patches
       def notify_about_with_event?(object)
         #Update this method with all the events cases.
         #Alias the old method notify_about?(object)
-
-        if mail_notification == 'all'
-          true
-        elsif mail_notification.blank? || mail_notification == 'none'
-          false
-        else
-          case object
-          when Issue
-            case mail_notification
-            when 'only_my_events'
-              # user receives notifications for created/assigned issues on unselected projects
-              object.author == self || is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.assigned_to_was)
-            when 'selected'
-              # user receives notifications for created/assigned issues on unselected projects
-              object.author == self || is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.assigned_to_was) || 
+        if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
+          if mail_notification == 'all'
+            true
+          elsif mail_notification.blank? || mail_notification == 'none'
+            false
+          else
+            case object
+            when Issue
+              case mail_notification
+              when 'only_my_events'
+                # user receives notifications for created/assigned issues on unselected projects
+                object.author == self || is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.assigned_to_was)
+              when 'selected'
+                # user receives notifications for created/assigned issues on unselected projects
+                object.author == self || is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.assigned_to_was) || 
+                check_user_events(object)
+                #How to check if the object is newly created or updated.
+              when 'only_assigned'
+                is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.assigned_to_was)
+              when 'only_owner'
+                object.author == self
+              end
+            when News, Journal, Message, Document, WikiContent
               check_user_events(object)
-              #How to check if the object is newly created or updated.
-            when 'only_assigned'
-              is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.assigned_to_was)
-            when 'only_owner'
-              object.author == self
             end
-          when News, Journal, Message, Document, WikiContent
-            check_user_events(object)
           end
+        else
+          notify_about_without_event?(object)
         end
       end
     end
