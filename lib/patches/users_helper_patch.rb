@@ -11,7 +11,7 @@ module Patches
 
     module InstanceMethods
 
-    	def render_project_events_lists(project)
+    	def render_project_events_lists(project, show=true)
 
         available_events = {'document_added'        => "ev_document_added",
                             'file_added'            => "ev_file_added",
@@ -26,17 +26,21 @@ module Patches
                             'wiki_content_updated'  => "ev_wiki_content_updated" }
 
         s = ''
-        s << "<fieldset class='box', style='display:none;'"
+        displaycontent = show == true ? "" : "style='display:none;'"
+        s << "<fieldset class='box', #{displaycontent}"
 
         cssclass = ["splitcontentleft","splitcontentright"]
         var = 0
+        user_project_events = @user.notified_projects_events(project)
+        user_project_events = [] if user_project_events.nil?
+
         available_events.each do |event, event_label|
           # next if !Setting.notified_events.include?(event)
           s <<  content_tag('label',
                   check_box_tag(
                     'user[notified_project_ids][]',
                     {project.id => event},
-                    @user.notified_projects_ids.include?(project.id),
+                    user_project_events.include?(event),
                     :id => nil) + ' ' + l(event_label.to_sym) , :class => cssclass[var])
           var = var == 0 ? 1 : 0
         end
