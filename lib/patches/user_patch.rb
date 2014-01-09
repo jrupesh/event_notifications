@@ -49,7 +49,8 @@ module Patches
           if Time.now - object.created_on > 30
             event = 'issue_updated'
           end
-          notified_projects_events(object.project).include?(event)
+          tracker_event = event.sub('issue') { object.tracker.name.downcase }
+          notified_projects_events(object.project).include?(tracker_event)
         when News
           notified_projects_events(object.project).include?("news_added")
         when WikiContent
@@ -67,11 +68,11 @@ module Patches
         # Below are wrt to ISSUE notifications.
         when Journal
           if object.notes.present?
-            notified_projects_events(object.project).include?("issue_note_added")
+            notified_projects_events(object.project).include?("issue_note_added".sub('issue'){ object.journalized.tracker.name.downcase })
           elsif object.new_status.present?
-            notified_projects_events(object.project).include?("issue_status_updated") 
+            notified_projects_events(object.project).include?("issue_status_updated".sub('issue'){ object.journalized.tracker.name.downcase })
           elsif object.new_value_for('priority_id').present?
-            notified_projects_events(object.project).include?("issue_priority_updated") 
+            notified_projects_events(object.project).include?("issue_priority_updated".sub('issue'){ object.journalized.tracker.name.downcase })
           else
             false
           end

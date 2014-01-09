@@ -11,6 +11,11 @@ en:
   ev_news_added: News added.
   ev_wiki_content_added: Wiki added.
   ev_wiki_content_updated: Wiki updated.
+  ev_added: added.
+  ev_updated: updated.
+  ev_note_added: note added.
+  ev_status_updated: status changed.
+  ev_priority_updated: priority changed.
 
   enable_event_notifications_settings: Enable Event notification plugin.
   enable_event_notifications_settings_description: If true; emails are sent to receipients on creation or updation of events checked by user.
