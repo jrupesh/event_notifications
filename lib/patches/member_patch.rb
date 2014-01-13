@@ -18,7 +18,6 @@ module Patches
       def update_events!
         #Update all the events with respect to the project notifications.
         events_available = Setting.notified_events
-        #Project 
         Project.all.each do |p|
           events_to_update = []
           events_available.each do |e|

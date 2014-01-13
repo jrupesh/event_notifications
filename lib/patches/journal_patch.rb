@@ -20,10 +20,10 @@ module Patches
           if private_notes?
             notified = notified.select {|user| user.allowed_to?(:view_private_notes, journalized.project)}
           end
+          notified
         else
-          notified = notified_users_without_events
+          notified_users_without_events
         end
-        notified
       end
     end
   end

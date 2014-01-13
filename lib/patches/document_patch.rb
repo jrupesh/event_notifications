@@ -6,15 +6,19 @@ module Patches
 
       base.class_eval do
         unloadable
+        alias_method_chain :recipients, :events
       end
     end
 
     module InstanceMethods
-	    def recipients
-	      notified = Setting.plugin_event_notifications["enable_event_notifications"] == "on" ? project.notified_users(self) :
-             project.notified_users
-	      notified.reject! {|user| !visible?(user)}
-	      notified.collect(&:mail)
+	    def recipients_with_events
+        if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
+  	      notified =  project.notified_users(self)
+  	      notified.reject! {|user| !visible?(user)}
+  	      notified.collect(&:mail)
+        else
+          recipients_without_events
+        end
 	    end
     end
   end

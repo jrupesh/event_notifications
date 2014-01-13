@@ -12,11 +12,13 @@ module Patches
 
     module InstanceMethods
       def recipients_with_events
-        notified = Setting.plugin_event_notifications["enable_event_notifications"] == "on" ? project.notified_users(self) :
-             project.notified_users
-
-        notified.reject! {|user| !visible?(user)}
-        notified.collect(&:mail)
+        if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
+          notified = project.notified_users(self)
+          notified.reject! {|user| !visible?(user)}
+          notified.collect(&:mail)
+        else
+          recipients_without_events
+        end
       end
     end
   end
