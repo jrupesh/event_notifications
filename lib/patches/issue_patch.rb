@@ -24,7 +24,7 @@ module Patches
         end
         notified = notified.select {|u| u.active? && u.notify_about?(self)}
 
-        notified += Setting.plugin_event_notifications["enable_event_notifications"] == "on" ? project.notified_users(self) :
+        notified += Setting.plugin_event_notifications["enable_event_notifications"] == "on" ? project.notified_users_with_events(self) :
              project.notified_users
 
         notified.uniq!

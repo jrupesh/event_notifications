@@ -44,20 +44,15 @@ module Patches
       def check_user_events(object)
         case object
         when Issue
-          #Assumption (Dirty Check) - Created on date is older than a 30 sec. (Issue updated)
-          event = 'issue_added'
-          if Time.now - object.created_on > 30
-            event = 'issue_updated'
-          end
+          #Assumption (Dirty Check) - Created on and modified date is not older than 5 sec. (Issue updated)
+          event = object.updated_on - object.created_on < 5 ? 'issue_added' : 'issue_updated'
           tracker_event = event.sub('issue') { object.tracker.name.downcase }
           notified_projects_events(object.project).include?(tracker_event)
         when News
-          notified_projects_events(object.project).include?("news_added")
+          object.comments_count > 0 ? notified_projects_events(object.project).include?("news_comment_added") :
+            notified_projects_events(object.project).include?("news_added")
         when WikiContent
-          event = 'wiki_content_added'
-          if Time.now - object.created_on > 30
-            event = 'wiki_content_updated'
-          end
+          event = object.version > 1 ? 'wiki_content_updated' : 'wiki_content_added'
           notified_projects_events(object.project).include?(event)
         when Document
           notified_projects_events(object.project).include?("document_added")
@@ -80,8 +75,6 @@ module Patches
       end
 
       def notify_about_with_event?(object)
-        #Update this method with all the events cases.
-        #Alias the old method notify_about?(object)
         if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
           if mail_notification == 'all'
             true

@@ -9,6 +9,7 @@ en:
   ev_issue_priority_updated: Issue priority changed.
   ev_message_posted: Message posted.
   ev_news_added: News added.
+  ev_news_comment_added: News comment added
   ev_wiki_content_added: Wiki added.
   ev_wiki_content_updated: Wiki updated.
   ev_added: added.

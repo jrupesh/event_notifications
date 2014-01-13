@@ -12,17 +12,19 @@ module Patches
     module InstanceMethods
 
     	def render_project_events_lists(project, show=true)
+        return if !Setting.notified_events.any?
         s = ''
         if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
-          available_events = {'document_added'        => "ev_document_added",
-                              'issue_added'           => "ev_issue_added",
+          available_events = {'issue_added'           => "ev_issue_added",
                               'issue_updated'         => "ev_issue_updated",
                               'issue_note_added'      => "ev_issue_note_added",
                               'issue_status_updated'  => "ev_issue_status_updated",
                               'issue_priority_updated'=> "ev_issue_priority_updated",
+                              'document_added'        => "ev_document_added",
                               'file_added'            => "ev_file_added",
                               'message_posted'        => "ev_message_posted",
                               'news_added'            => "ev_news_added",
+                              'news_comment_added'    => "ev_news_comment_added",
                               'wiki_content_added'    => "ev_wiki_content_added",
                               'wiki_content_updated'  => "ev_wiki_content_updated" }
 
@@ -61,6 +63,7 @@ module Patches
           end
           s << "</fieldset>"
         end
+        return "" if !s.include?("label")
         s.html_safe
       end
     end
