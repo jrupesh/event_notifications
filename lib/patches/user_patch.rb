@@ -56,21 +56,27 @@ module Patches
           notified_projects_events(object.project).include?(event)
         when Document
           notified_projects_events(object.project).include?("document_added")
-        # when File
-        #   notified_projects_events(object.project).include?("file_added")
+        when Version
+          notified_projects_events(object.project).include?("file_added")
+        when Project
+          notified_projects_events(object).include?("file_added")
         when Message
           notified_projects_events(object.project).include?("message_posted")
         # Below are wrt to ISSUE notifications.
         when Journal
-          if object.notes.present?
-            notified_projects_events(object.project).include?("issue_note_added".sub('issue'){ object.journalized.tracker.name.downcase })
-          elsif object.new_status.present?
-            notified_projects_events(object.project).include?("issue_status_updated".sub('issue'){ object.journalized.tracker.name.downcase })
+          status = false
+          if object.new_status.present?
+            status = notified_projects_events(object.project).include?("issue_status_updated".sub('issue'){ object.journalized.tracker.name.downcase })
           elsif object.new_value_for('priority_id').present?
-            notified_projects_events(object.project).include?("issue_priority_updated".sub('issue'){ object.journalized.tracker.name.downcase })
+            status = notified_projects_events(object.project).include?("issue_priority_updated".sub('issue'){ object.journalized.tracker.name.downcase })
+          end
+          
+          if object.notes.present? && !status
+            status = notified_projects_events(object.project).include?("issue_note_added".sub('issue'){ object.journalized.tracker.name.downcase })
           else
             false
           end
+          status
         end
       end
 

@@ -1,18 +1,8 @@
 require File.expand_path('../../test_helper', __FILE__)
 
-class MailerTest < ActiveSupport::TestCase
-  include Redmine::I18n
-  include ActionDispatch::Assertions::SelectorAssertions
-  fixtures :projects, :enabled_modules, :issues, :users, :members,
-           :member_roles, :roles, :documents, :attachments, :news,
-           :tokens, :journals, :journal_details, :changesets,
-           :trackers, :projects_trackers,
-           :issue_statuses, :enumerations, :messages, :boards, :repositories,
-           :wikis, :wiki_pages, :wiki_contents,
-           :versions,
-           :comments
+class ActiveSupport::TestCase
 
-  def setup
+  def setup_with_global
     Setting.plugin_event_notifications["enable_event_notifications"] = "on"
     ActionMailer::Base.deliveries.clear
     Setting.host_name = 'mydomain.foo'
@@ -27,17 +17,23 @@ class MailerTest < ActiveSupport::TestCase
     Member.update_all(:mail_notification => false, :events => [])
     User.update_all(:mail_notification => 'none')
 
-    # pmembers = project.members
-    # pmembers.each do |m|
-    #   u = m.user
-    #   u.mail_notification = 'none'
-    #   u.save
-
-    #   m.mail_notification = false
-    #   m.events = []
-    #   m.save
-    # end
+    setup_without_global
   end
+
+  alias_method_chain :setup, :global
+end
+
+class MailerTest < ActiveSupport::TestCase
+  include Redmine::I18n
+  include ActionDispatch::Assertions::SelectorAssertions
+  fixtures :projects, :enabled_modules, :issues, :users, :members,
+           :member_roles, :roles, :documents, :attachments, :news,
+           :tokens, :journals, :journal_details, :changesets,
+           :trackers, :projects_trackers,
+           :issue_statuses, :enumerations, :messages, :boards, :repositories,
+           :wikis, :wiki_pages, :wiki_contents,
+           :versions,
+           :comments
 
   def last_email
     mail = ActionMailer::Base.deliveries.last
