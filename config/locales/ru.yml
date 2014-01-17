@@ -1,0 +1,23 @@
+# Russian strings go here for Rails i18n
+ru:
+  ev_document_added: Добавлен документ.
+  ev_file_added: Добавлен файл.
+  ev_issue_added: Добавлена задача.
+  ev_issue_updated: Обновлена аадача.
+  ev_issue_note_added: Добавлен комментарий к задаче.
+  ev_issue_status_updated: Изменен статус задачи.
+  ev_issue_priority_updated: Изменен приоритет задачи.
+  ev_message_posted: Отправлено сообщение.
+  ev_news_added: Добавлена новость.
+  ev_news_comment_added: Добавлен комментарий к новости.
+  ev_wiki_content_added: Добавлена Wiki-страница.
+  ev_wiki_content_updated: Обновлена Wiki-страница.
+  ev_added: добавлен(а).
+  ev_updated: обновлен(а).
+  ev_note_added: добавлен комментарий.
+  ev_status_updated: изменен статус.
+  ev_priority_updated: изменен приоритет.
+
+  enable_event_notifications_settings: Включить плагин Event notification.
+  enable_event_notifications_settings_description: Если Включено, то email-уведомления посылаются получателям при создании или обновлении элементов, отмеченных пользователем.
+
