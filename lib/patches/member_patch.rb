@@ -7,25 +7,21 @@ module Patches
 
       base.class_eval do
         unloadable
-        serialize :events
-
-      
+        serialize :events, Array
       end
-
-
     end
 
     module InstanceMethods
       def getAvailableProjectEvents(project)
         available_events_label = {}
         if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
-          AVAILABLE_EVENTS.each do |event, event_label|
+          Member.AVAILABLE_EVENTS.each do |event, event_label|
             next if !Setting.notified_events.include?(event)
 
             if event.include?("issue_")
               project.trackers.each do |tracker|
                 tracker_event = event.sub('issue') { tracker.name.downcase }
-                available_events_label[tracker_event] = [ tracker.name , event_label]
+                available_events_label[tracker_event] = [ tracker.name , event_label.sub('issue_'){""}]
               end
             else
               available_events_label[event] = ["", event_label]
@@ -36,9 +32,34 @@ module Patches
       end
 
       def events_group=(arg)
-        events = arg
-        if user && user.is_a?(Group) && arg.length > 0
+        proj_events_hash = {}
+        arg.each do |h|
+          eval(h).each do |key, value|
+            proj_events_hash.has_key?(key) ? proj_events_hash[key] << value : proj_events_hash[key] = [value]
+          end
+        end
+        proj_events_hash.each do | project_id, proj_events |
 
+          if proj_events.length > 0
+            events_removed = self.events - proj_events
+            puts "#{events_removed}"
+            self.events= proj_events
+            self.mail_notification= true
+
+            if principal.is_a?(Group)
+              project = Project.find(project_id)
+
+              principal.users.each do |u|
+                next if !project.users.include? u
+                m = Member.where("project_id = ? and user_id = ?", project_id, u.id).first
+                proj_events.each { |e| m.events << e }
+                m.events.uniq!
+                events_removed.each { |e| m.events.delete(e)}
+                m.mail_notification= m.events.length > 0 ? true : false
+                m.save
+              end
+            end
+          end
         end
       end
     end
@@ -46,7 +67,7 @@ module Patches
     module ClassMethods
 
       def AVAILABLE_EVENTS
-        events = {'issue_added'           => "ev_issue_added",
+        available_events = {'issue_added'           => "ev_issue_added",
                             'issue_updated'         => "ev_issue_updated",
                             'issue_note_added'      => "ev_issue_note_added",
                             'issue_status_updated'  => "ev_issue_status_updated",
@@ -63,6 +84,8 @@ module Patches
       def update_events!
         #Update all the events with respect to the project notifications.
         events_available = Setting.notified_events
+        Member.update_all(:mail_notification => false, :events => [])
+
         Project.all.each do |p|
           events_to_update = []
           events_available.each do |e|
