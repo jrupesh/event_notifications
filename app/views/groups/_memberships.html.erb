@@ -36,33 +36,37 @@
             "$('#member-#{membership.id}-roles').hide(); $('#member-#{membership.id}-roles-form').show(); return false;",
             :class => 'icon icon-edit'
           ) %>
-      <%= link_to_function(
+      <% if Setting.plugin_event_notifications["enable_event_notifications"] == "on" %>
+        <%= link_to_function(
             l(:button_edit_events),
             "$('#member-#{membership.id}-events').hide(); $('#member-#{membership.id}-events-form').show(); return false;",
             :class => 'icon icon-edit'
           ) %>
+      <% end %>
       <%= delete_link({:controller => 'groups', :action => 'destroy_membership', :id => @group, :membership_id => membership},
                       :remote => true,
                       :method => :post) %>
   </td>
-  </tr>
-  <tr>
-    <td style="width: 40%;">
-    <span id="member-<%= membership.id %>-events", style="width: 100%;"></span>
-    <%= form_for(:membership, :remote => true,
-                 :url => { :action => 'edit_membership', :id => @group, :membership_id => membership },
-                 :html => { :id => "member-#{membership.id}-events-form", :style => 'display:none;'}) do %>
-        <p><% membership.getAvailableProjectEvents(membership.project).each do |event,event_label| %>
-        <label><%= check_box_tag 'membership[events_group][]', {membership.project.id => event}, membership.events.include?(event) %>
-        <%= event_label[0] %> <%= l(event_label[1].to_sym)%></label> <br/>
-        <% end %></p>
-        <p><%= submit_tag l(:button_change) %>
-        <%= link_to_function(
-              l(:button_cancel),
-              "$('#member-#{membership.id}-events').show(); $('#member-#{membership.id}-events-form').hide(); return false;"
-            ) %></p>
-    <% end %>
-    <td>
+  <% if Setting.plugin_event_notifications["enable_event_notifications"] == "on" %>
+    </tr>
+    <tr>
+      <td style="width: 40%;">
+      <span id="member-<%= membership.id %>-events", style="width: 100%;"></span>
+      <%= form_for(:membership, :remote => true,
+                   :url => { :action => 'edit_membership', :id => @group, :membership_id => membership },
+                   :html => { :id => "member-#{membership.id}-events-form", :style => 'display:none;'}) do %>
+          <p><% membership.getAvailableProjectEvents(membership.project).each do |event,event_label| %>
+          <label><%= check_box_tag 'membership[events_group][]', {membership.project.id => event}, membership.events.include?(event) %>
+          <%= event_label[0] %> <%= l(event_label[1].to_sym)%></label> <br/>
+          <% end %></p>
+          <p><%= submit_tag l(:button_change) %>
+          <%= link_to_function(
+                l(:button_cancel),
+                "$('#member-#{membership.id}-events').show(); $('#member-#{membership.id}-events-form').hide(); return false;"
+              ) %></p>
+      <% end %>
+      <td>
+  <% end %>
   </tr>
 <% end; reset_cycle %>
   </tbody>
