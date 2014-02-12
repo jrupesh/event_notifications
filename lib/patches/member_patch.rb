@@ -51,7 +51,8 @@ module Patches
 
               principal.users.each do |u|
                 next if !project.users.include? u
-                m = Member.where("project_id = ? and user_id = ?", project_id, u.id).first
+                m = Member.find_by_project_id_and_user_id(project_id, u.id)
+                # m = Member.where("project_id = ? and user_id = ?", project_id, u.id).first
                 proj_events.each { |e| m.events << e }
                 m.events.uniq!
                 events_removed.each { |e| m.events.delete(e)}
