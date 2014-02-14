@@ -7,6 +7,7 @@ require 'patches/document_patch'
 require 'patches/journal_patch'
 require 'patches/message_patch'
 require 'patches/wiki_content_patch'
+require 'patches/watchers_controller_patch'
 
 Redmine::Plugin.register :event_notifications do
   name 'Event Notifications plugin'

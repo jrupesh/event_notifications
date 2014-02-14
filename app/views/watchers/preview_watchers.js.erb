@@ -1,0 +1,6 @@
+<% if @issue.valid? %>
+	$('#watchersheading').remove();
+  $('#watchers').html('<%= escape_javascript(render :partial => 'watchers/watchers', :locals => {:watched => @issue, :auto_watched => @automatic_watchers}) %>');
+<% else %>
+  alert('<%= raw(escape_javascript(l(:notice_failed_to_load_watchers, :errors => @issue.errors.full_messages.join(', ')))) %>');
+<% end %>
