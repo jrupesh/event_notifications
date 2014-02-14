@@ -14,7 +14,6 @@ module Patches
         @issue = Issue.find(params[:id]) if @issue.nil? & params[:id].present?
         if !@issue.nil?
           @project = @issue.project
-          @automatic_watchers = @issue.auto_watcher_users
         else
           render_403 :message => :notice_issue_not_found 
           return
