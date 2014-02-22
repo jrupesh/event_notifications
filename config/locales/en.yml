@@ -27,3 +27,8 @@ en:
   label_issue_automatic_watchers: Automatic watchers
   notice_failed_to_load_watchers: Failed to load watchers
   notice_issue_not_found: Issue not found
+
+  enable_notification_for_issue_attributes: Issue fields notifications
+  enable_notification_for_cf: Issue custom fields
+  enable_notification_for_project_issue_categories: Project Issue Categories
+  issue_fields_description: Check to enable notification for the issue fields.

@@ -17,7 +17,8 @@ Redmine::Plugin.register :event_notifications do
   author_url 'mailto:rupeshj@esi-group.com'
 
   settings :default => {
-    'enable_event_notifications' => false },
+    'enable_event_notifications' => false,
+    'issue_cf_notifications'  => [],
+    'issue_category_notifications'  => [] },
   	:partial => 'settings/event_notifications_settings'
-
 end
