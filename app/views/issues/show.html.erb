@@ -67,7 +67,7 @@ end %>
 <%= render_custom_fields_rows(@issue) %>
 <%= call_hook(:view_issues_show_details_bottom, :issue => @issue) %>
 </table>
-<%= call_hook(:view_issues_show_description_top, :issue => @issue) %>
+
 <% if @issue.description? || @issue.attachments.any? -%>
 <hr />
 <% if @issue.description? %>
