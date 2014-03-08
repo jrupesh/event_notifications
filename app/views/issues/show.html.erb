@@ -147,15 +147,14 @@ end %>
     (@issue.watchers.present? && User.current.allowed_to?(:view_issue_watchers, @project)) %>
 
     <% if Setting.plugin_event_notifications["enable_event_notifications"] == "on" %>
-      <h3 id="watchersheading"><%= l(:label_issue_watchers) %></h3>
-      <div id="watchers">
+      <h3 id="watchersheading"><%= l(:label_issue_automatic_watchers) %></h3>
+      <div id="autowatchers">
         <%= link_to(l(:label_view_watchers_list), preview_watchers_path(:id => @issue, :object_type => @issue.class.name.underscore, :object_id => @issue), :method => :get, :remote => true ) %>
       </div>
-    <% else %>
-      <div id="watchers">
-        <%= render :partial => 'watchers/watchers', :locals => {:watched => @issue} %>
-      </div>
     <% end %>
+    <div id="watchers">
+      <%= render :partial => 'watchers/watchers', :locals => {:watched => @issue} %>
+    </div>
   <% end %>
 <% end %>
 
