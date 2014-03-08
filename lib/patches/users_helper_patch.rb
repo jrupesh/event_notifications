@@ -66,27 +66,31 @@ module Patches
           next if !cf_ids.include?(cf.to_i)
           cf_obj = custom_fields.fetch(cf_ids.index(cf.to_i))
 
-          selected_value_list = user_project_events.select { |e| e if e.include?("CF#{cf}-")}
-          selected_value = selected_value_list.any? ? "{#{project.id} => \'#{selected_value_list.first}\'}" : ""
+          selected_value_list = user_project_events.select { |e| e if e.include?("CF#{project.id}-#{cf}-")}
+          selected_value = selected_value_list.any? ? 
+            selected_value_list.collect{|k| "{#{project.id} => \'#{k}\'}"} :
+            ""
 
           s <<  "<div><label>#{cf_obj.name} "
           s <<  select_tag( html_id,
               options_for_select( [["-", "{#{project.id} => \'\'}" ]] + 
-              cf_obj.possible_values.collect{|g| [g.to_s, "{#{project.id} => \'CF#{cf}-#{g.to_s}\'}" ]}, selected_value),
-              :id => nil)
+              cf_obj.possible_values.collect{|g| [g.to_s, "{#{project.id} => \'CF#{project.id}-#{cf}-#{g.to_s}\'}" ]}, selected_value),
+              :id => nil, :multiple => true)
           s << "</label></div>"
         end
 
         if Setting.plugin_event_notifications["issue_category_notifications"].include?(project.id.to_s)
           selected_value_list = user_project_events.select { |e| e if e.include?("IC-")}
-          selected_value = selected_value_list.any? ? "{#{project.id} => \'#{selected_value_list.first}\'}" : ""
+          selected_value = selected_value_list.any? ? 
+            selected_value_list.collect{|k| "{#{project.id} => \'#{k}\'}"} :
+            ""
           label = "Issue Category"
 
           s <<  "<div><label>#{label} "
           s <<  select_tag( html_id,
               options_for_select( [["-", "{#{project.id} => \'\'}" ]] + 
               project.issue_categories.collect{|g| [g.name, "{#{project.id} => \'IC-#{g.id}\'}" ]}, selected_value),
-              :id => nil)
+              :id => nil, :multiple => true)
           s <<  "</label></div>"
         end
         s    
