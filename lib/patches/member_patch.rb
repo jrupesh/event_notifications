@@ -2,20 +2,35 @@ module Patches
   module MemberPatch
 
     def self.included(base) # :nodoc:
+      base.const_set('AVAILABLE_EVENTS',Patches::MemberPatch::EventsConstant::AVAILABLE_EVENTS)
       base.extend(ClassMethods)
       base.send(:include, InstanceMethods)
-
       base.class_eval do
         unloadable
         serialize :events, Array
       end
     end
 
+    module EventsConstant
+      AVAILABLE_EVENTS = {'issue_added'           => "ev_issue_added",
+                          'issue_updated'         => "ev_issue_updated",
+                          'issue_note_added'      => "ev_issue_note_added",
+                          'issue_status_updated'  => "ev_issue_status_updated",
+                          'issue_priority_updated'=> "ev_issue_priority_updated",
+                          'document_added'        => "ev_document_added",
+                          'file_added'            => "ev_file_added",
+                          'message_posted'        => "ev_message_posted",
+                          'news_added'            => "ev_news_added",
+                          'news_comment_added'    => "ev_news_comment_added",
+                          'wiki_content_added'    => "ev_wiki_content_added",
+                          'wiki_content_updated'  => "ev_wiki_content_updated" }.freeze
+    end
+
     module InstanceMethods
       def getAvailableProjectEvents(project)
         available_events_label = {}
         if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
-          Member.AVAILABLE_EVENTS.each do |event, event_label|
+          Member::AVAILABLE_EVENTS.each do |event, event_label|
             next if !Setting.notified_events.include?(event)
 
             if event.include?("issue_")
@@ -66,22 +81,6 @@ module Patches
     end
 
     module ClassMethods
-
-      def AVAILABLE_EVENTS
-        available_events = {'issue_added'           => "ev_issue_added",
-                            'issue_updated'         => "ev_issue_updated",
-                            'issue_note_added'      => "ev_issue_note_added",
-                            'issue_status_updated'  => "ev_issue_status_updated",
-                            'issue_priority_updated'=> "ev_issue_priority_updated",
-                            'document_added'        => "ev_document_added",
-                            'file_added'            => "ev_file_added",
-                            'message_posted'        => "ev_message_posted",
-                            'news_added'            => "ev_news_added",
-                            'news_comment_added'    => "ev_news_comment_added",
-                            'wiki_content_added'    => "ev_wiki_content_added",
-                            'wiki_content_updated'  => "ev_wiki_content_updated" }  
-      end
-
       def update_events!
         #Update all the events with respect to the project notifications.
         events_available = Setting.notified_events
