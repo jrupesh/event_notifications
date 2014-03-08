@@ -23,7 +23,7 @@ en:
 
   button_edit_events: Edit events
 
-  label_view_watchers_list: View/Edit watchers list
+  label_view_watchers_list: View auto watchers
   label_issue_automatic_watchers: Automatic watchers
   notice_failed_to_load_watchers: Failed to load watchers
   notice_issue_not_found: Issue not found
