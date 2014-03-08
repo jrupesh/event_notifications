@@ -53,7 +53,7 @@ module Patches
           return true if events.include?(tracker_event) == true
 
           object.custom_field_values.each do |cfv|
-            return true if events.include?("CF#{cfv.custom_field.id}-#{cfv.value}") == true
+            return true if events.include?("CF#{object.project.id}-#{cfv.custom_field.id}-#{cfv.value}") == true
           end
 
           return true if !object.category.nil? && events.include?("IC-#{object.category.id}") == true
