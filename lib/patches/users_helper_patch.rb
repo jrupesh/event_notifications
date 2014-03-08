@@ -49,46 +49,47 @@ module Patches
             end
           end
 
-          # for each cf in the settings, Check if that exists in the project.
-          # create a label and a combo box with the possible values.
-          Setting.plugin_event_notifications["issue_cf_notifications"].each do |cf|
-            next if cf.blank? || cf.nil?
-            custom_fields = project.all_issue_custom_fields
-            cf_ids = custom_fields.map(&:id)
-            next if !cf_ids.include?(cf.to_i)
-            pos = cf_ids.index(cf.to_i)
-            cf_obj = custom_fields.fetch(pos)
-            label = cf_obj.name
-
-            selected_value_list = user_project_events.select { |e| e if e.include?("CF#{cf}-")}
-            selected_value = selected_value_list.any? ? "{#{project.id} => \'#{selected_value_list.first}\'}" : ""
-
-            s <<  content_tag('label',
-              label + ' ') + select_tag(
-                'user[notified_project_ids][]',
-                options_for_select( [["-", "{#{project.id} => \'\'}" ]] + 
-                cf_obj.possible_values.collect{|g| [g.to_s, "{#{project.id} => \'CF#{cf}-#{g.to_s}\'}" ]}, selected_value),
-                :id => nil)
-
-          end
-          
-          if Setting.plugin_event_notifications["issue_category_notifications"].include?(project.id.to_s)
-            selected_value_list = user_project_events.select { |e| e if e.include?("IC-")}
-            selected_value = selected_value_list.any? ? "{#{project.id} => \'#{selected_value_list.first}\'}" : ""
-            label = "Issue Category"
-
-            s <<  content_tag('label',
-              label + ' ') + select_tag(
-                'user[notified_project_ids][]',
-                options_for_select( [["-", "{#{project.id} => \'\'}" ]] + 
-                project.issue_categories.collect{|g| [g.name, "{#{project.id} => \'IC-#{g.id}\'}" ]}, selected_value),
-                :id => nil)
-            end
+          s << customfields_issuecategories(project,user_project_events,'user[notified_project_ids][]')
 
           s << "</fieldset>"
         end
         return "" if !s.include?("label")
         s.html_safe
+      end
+
+      def customfields_issuecategories(project,user_project_events, html_id)
+        s = ""
+        Setting.plugin_event_notifications["issue_cf_notifications"].each do |cf|
+          next if cf.blank? || cf.nil?
+          custom_fields = project.all_issue_custom_fields
+          cf_ids = custom_fields.map(&:id)
+          next if !cf_ids.include?(cf.to_i)
+          cf_obj = custom_fields.fetch(cf_ids.index(cf.to_i))
+
+          selected_value_list = user_project_events.select { |e| e if e.include?("CF#{cf}-")}
+          selected_value = selected_value_list.any? ? "{#{project.id} => \'#{selected_value_list.first}\'}" : ""
+
+          s <<  "<div><label>#{cf_obj.name} "
+          s <<  select_tag( html_id,
+              options_for_select( [["-", "{#{project.id} => \'\'}" ]] + 
+              cf_obj.possible_values.collect{|g| [g.to_s, "{#{project.id} => \'CF#{cf}-#{g.to_s}\'}" ]}, selected_value),
+              :id => nil)
+          s << "</label></div>"
+        end
+
+        if Setting.plugin_event_notifications["issue_category_notifications"].include?(project.id.to_s)
+          selected_value_list = user_project_events.select { |e| e if e.include?("IC-")}
+          selected_value = selected_value_list.any? ? "{#{project.id} => \'#{selected_value_list.first}\'}" : ""
+          label = "Issue Category"
+
+          s <<  "<div><label>#{label} "
+          s <<  select_tag( html_id,
+              options_for_select( [["-", "{#{project.id} => \'\'}" ]] + 
+              project.issue_categories.collect{|g| [g.name, "{#{project.id} => \'IC-#{g.id}\'}" ]}, selected_value),
+              :id => nil)
+          s <<  "</label></div>"
+        end
+        s    
       end
     end
   end
