@@ -57,7 +57,7 @@ module Patches
 
           if proj_events.length > 0
             events_removed = self.events - proj_events
-            puts "#{events_removed}"
+            # puts "#{events_removed}"
             self.events= proj_events
             self.mail_notification= true
 
