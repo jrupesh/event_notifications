@@ -4,14 +4,46 @@ module Patches
     def self.included(base) # :nodoc:
       base.send(:include, InstanceMethods)
 
-      base.class_eval do
-        unloadable
-        alias_method_chain :update_notified_project_ids, :events
-        alias_method_chain :notify_about?, :event
+      if Redmine::VERSION.to_s >= "2.4"
+        base.class_eval do
+          unloadable
+          alias_method_chain :update_notified_project_ids, :events
+          alias_method_chain :notify_about?, :event
+        end
+      else
+        base.class_eval do
+          unloadable
+          # alias_method_chain 'notified_project_ids=', 'events'
+          alias_method_chain :notify_about?, :event
+        end
       end
     end
 
     module InstanceMethods
+      def notify_events=(ids)
+        logger.debug("PATCH - update_notified_project_ids ids #{ids}")
+        if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
+          idss = (mail_notification == 'selected' ? Array.wrap(ids).reject(&:blank?) : [])
+          ids_hash = {}
+          idss.each do |h|
+            eval(h).each do |key, value|
+              ids_hash.has_key?(key) ? ids_hash[key] << value : ids_hash[key] = [value]
+            end
+          end
+          members.update_all(:mail_notification => false)
+          if ids_hash.keys.any?
+            members.where(:project_id => ids_hash.keys).update_all(:mail_notification => true)
+            members.each { |m| m.update_attributes!(:events => ids_hash[m.project_id]) if ids_hash.keys.include?(m.project_id) }
+          end
+          notified_projects_ids
+        else
+          Member.update_all("mail_notification = #{connection.quoted_false}", ['user_id = ?', id])
+          Member.update_all("mail_notification = #{connection.quoted_true}", ['user_id = ? AND project_id IN (?)', id, ids]) if ids && !ids.empty?
+          @notified_projects_ids = nil
+          notified_projects_ids          
+        end
+      end
+
       #TODO : Check Project#notified_users. This needs to be aliased to user#notify_about?
       def update_notified_project_ids_with_events
         if Setting.plugin_event_notifications["enable_event_notifications"] == "on"

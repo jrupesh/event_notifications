@@ -8,7 +8,8 @@
 <p>
 	<h4><%= l(:enable_notification_for_cf)%></h4>
 	
-		 <% IssueCustomField.all.each do |cf| %>
+		 <% IssueCustomField.all.each do |cf| 
+		 	next if !%w(list user version).include?(cf.field_format) %>
 		 <p>
 	 			<label><%= cf.name %></label>
 			  <%= check_box_tag 'settings[issue_cf_notifications][]', cf.id.to_s, 
