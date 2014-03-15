@@ -21,7 +21,7 @@ module Patches
           cssclass = ["splitcontentleft","splitcontentright"]
           var = 0
           user_project_events = @user.notified_projects_events(project)
-          user_project_events = [] if user_project_events.nil?
+          user_project_events = [] if user_project_events.nil? || user_project_events.blank?
 
           Member::AVAILABLE_EVENTS.each do |event, event_label|
             next if !Setting.notified_events.include?(event)
