@@ -13,6 +13,9 @@ require 'patches/watchers_controller_patch'
 require 'patches/groups_controller_patch'
 
 require 'patches/mailer_patch'
+if Redmine::VERSION.to_s < "2.4"
+  require 'patches/my_controller_patch'
+end
 
 Redmine::Plugin.register :event_notifications do
   name 'Event Notifications plugin'
