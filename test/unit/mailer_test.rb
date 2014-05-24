@@ -214,5 +214,30 @@ class MailerTest < ActiveSupport::TestCase
     assert mail.bcc.include?('someone@foo.bar')
     assert_equal mail.bcc.length, 1
   end
+
+  test "tracker_add_issue should not notify project members" do
+    issue = Issue.create!(:project_id => 1, :tracker_id => 1, :author_id => 3,
+                  :status_id => 1, :priority => IssuePriority.all.first,
+                  :subject => 'test_create')
+    issue.reload
+    User.set_notification(false)
+    assert !Mailer.deliver_issue_add(issue)
+
+    mail = ActionMailer::Base.deliveries.last
+    assert_nil mail
+
+    User.set_notification(true)
+
+    issue.reload
+    m = issue.project.members.last
+    m.user.update_attributes(:mail_notification => 'selected')
+    m.update_attributes(:mail_notification => true, :events => ["#{issue.tracker.name.downcase}_added"])
+
+    assert Mailer.deliver_issue_add(issue)
+
+    mail = last_email
+    assert mail.bcc.include?('someone@foo.bar')
+    assert_equal mail.bcc.length, 1
+  end  
 end
 

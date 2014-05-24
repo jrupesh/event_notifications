@@ -2,13 +2,28 @@ module Patches
   module UserPatch
 
     def self.included(base) # :nodoc:
+      base.extend(ClassMethods)
       base.send(:include, InstanceMethods)
 
       base.class_eval do
         unloadable
+        # cattr_accessor     :notification_enabled => true
         alias_method_chain :update_notified_project_ids, :events
         alias_method_chain :notify_about?, :event
       end
+    end
+
+    module ClassMethods
+      @@notification_enabled = true
+
+      def get_notification
+        @@notification_enabled
+      end
+
+      def set_notification(value)
+        @@notification_enabled = value
+      end
+
     end
 
     module InstanceMethods
@@ -92,6 +107,7 @@ module Patches
       end
 
       def notify_about_with_event?(object)
+        return false if self.class.get_notification == false
         if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
           if mail_notification == 'all'
             true
