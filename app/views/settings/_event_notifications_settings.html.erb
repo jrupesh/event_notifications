@@ -4,6 +4,17 @@
   <br />
   <em><%= l(:enable_event_notifications_settings_description) %></em>
 </p>
+<p>
+  <label><%= l(:event_notifications_with_author) %></label>
+  <%= radio_button_tag 'settings[event_notifications_with_author]', "default", settings['event_notifications_with_author'] == "default" %>
+  	<label style="margin-left:0px"><%= l(:event_notifications_with_author_default) %></label><br/>
+  <%= radio_button_tag 'settings[event_notifications_with_author]', "author", settings['event_notifications_with_author']  == "author" %>
+  	<label style="margin-left:0px"><%= l(:event_notifications_with_author_author) %></label><br/>
+  <%= radio_button_tag 'settings[event_notifications_with_author]', "authorname", settings['event_notifications_with_author'] == "authorname" %>
+  	<label style="margin-left:0px"><%= l(:event_notifications_with_author_authorname) %></label>
+</p>
+
+
 <h3><%= l(:enable_notification_for_issue_attributes)%></h3>
 <p>
 	<h4><%= l(:enable_notification_for_cf)%></h4>

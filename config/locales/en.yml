@@ -20,6 +20,10 @@ en:
 
   enable_event_notifications_settings: Enable Event notification plugin.
   enable_event_notifications_settings_description: If true; emails are sent to receipients on creation or updation of events checked by user.
+  event_notifications_with_author: Notification Options
+  event_notifications_with_author_default: Default <redmine@example.net>
+  event_notifications_with_author_author: Author Name <author.email@example.net>
+  event_notifications_with_author_authorname: Author Name <redmine@example.net>
 
   button_edit_events: Edit events
 
