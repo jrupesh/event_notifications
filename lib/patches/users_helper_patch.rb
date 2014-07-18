@@ -72,10 +72,15 @@ module Patches
             ""
 
           s <<  "<div><label>#{cf_obj.name} "
-          s <<  select_tag( html_id,
-              options_for_select( [["-", "{#{project.id} => \'\'}" ]] + 
-              cf_obj.possible_values.collect{|g| [g.to_s, "{#{project.id} => \'CF#{project.id}-#{cf}-#{g.to_s}\'}" ]}, selected_value),
-              :id => nil, :multiple => true)
+
+          case cf_obj.format
+          when "list"
+            s <<  select_tag( html_id,
+                options_for_select( [["-", "{#{project.id} => \'\'}" ]] + 
+                cf_obj.possible_values.collect{|g| [g.to_s, "{#{project.id} => \'CF#{project.id}-#{cf}-#{g.to_s}\'}" ]}, selected_value),
+                :id => nil, :multiple => true)
+          end
+
           s << "</label></div>"
         end
 
