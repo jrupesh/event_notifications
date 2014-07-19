@@ -36,7 +36,8 @@ en:
   enable_notification_for_cf: Issue custom fields
   enable_notification_for_project_issue_categories: Project Issue Categories
   issue_fields_description: Check to enable notification for the issue fields.
-  label_cf_unchecked: Field uncheked
-  label_cf_checked: Field cheked
-  label_cf_toggled_off: Field Toggled No
-  label_cf_toggled_on: Field Toggled Yes
+  label_cf_unchecked: unchecked
+  label_cf_checked: checked
+  label_cf_toggled_off: toggled No
+  label_cf_toggled_on: toggled Yes
+  label_notify: Email Notifications

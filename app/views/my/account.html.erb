@@ -1,0 +1,30 @@
+<div class="contextual">
+<%= link_to(l(:button_change_password), {:action => 'password'}, :class => 'icon icon-passwd') if @user.change_password_allowed? %>
+<%= call_hook(:view_my_account_contextual, :user => @user)%>
+</div>
+
+<h2><%=l(:label_my_account)%></h2>
+<%= error_messages_for 'user' %>
+
+<%= labelled_form_for :user, @user,
+                     :url => { :action => "account" },
+                     :html => { :id => 'my_account_form',
+                                :method => :post } do |f| %>
+
+<% account_tabs = [
+  {:name => 'general',      :partial => 'my/general_settings',      :label => :label_general,  :f => f},
+  {:name => 'notification', :partial => 'my/notification_settings', :label => :label_notify,   :f => f }
+  ]%>   
+
+<%= render_tabs account_tabs %>
+
+<p><%= submit_tag l(:button_save) %></p>
+
+<% end %>
+
+
+<% content_for :sidebar do %>
+<%= render :partial => 'sidebar' %>
+<% end %>
+
+<% html_title(l(:label_my_account)) -%>

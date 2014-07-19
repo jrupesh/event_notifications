@@ -49,7 +49,7 @@ module Patches
             end
           end
 
-          s << customfields_issuecategories(project,user_project_events,'user[notified_project_ids][]')
+          s << customfields_issuecategories(project,user_project_events,'user[notified_project_ids][]',var)
 
           s << "</fieldset>"
         end
@@ -57,7 +57,8 @@ module Patches
         s.html_safe
       end
 
-      def customfields_issuecategories(project,user_project_events, html_id)
+      def customfields_issuecategories(project,user_project_events, html_id, var=0)
+        cssclass = ["splitcontentleft","splitcontentright"]
         s = ""
         Setting.plugin_event_notifications["issue_cf_notifications"].each do |cf|
           next if cf.blank? || cf.nil?
@@ -71,14 +72,15 @@ module Patches
             selected_value_list.collect{|k| "{#{project.id} => \'#{k}\'}"} :
             ""
 
-          s <<  "<div><label>#{cf_obj.name} "
-
           case cf_obj.field_format
           when "list"
+            s <<  "<label class=#{cssclass[var]}>#{cf_obj.name} "
             s <<  select_tag( html_id,
                 options_for_select( [["-", "{#{project.id} => \'\'}" ]] + 
                 cf_obj.possible_values.collect{|g| [g.to_s, "{#{project.id} => \'CF#{project.id}-#{cf}-#{g.to_s}\'}" ]}, selected_value),
                 :id => nil, :multiple => true)
+            s << "</label>"
+
           when "bool"
             case cf_obj.edit_tag_style
             when 'check_box', 'radio'
@@ -88,7 +90,8 @@ module Patches
                         "{#{project.id} => \'CF#{project.id}-#{cf}-0\'}",
                         selected_value.include?("{#{project.id} => \'CF#{project.id}-#{cf}-0\'}"),
                         :id => nil) + ' ' + (cf_obj.edit_tag_style == 'check_box' ? 
-                                          l(:label_cf_unchecked) : l(:label_cf_toggled_off)))
+                                  "#{cf_obj.name} #{l(:label_cf_unchecked)}" :
+                                  "#{cf_obj.name} #{l(:label_cf_toggled_off)}") , :class => cssclass[var])
 
               s << content_tag('label',
                       check_box_tag(
@@ -96,17 +99,20 @@ module Patches
                         "{#{project.id} => \'CF#{project.id}-#{cf}-1\'}",
                         selected_value.include?("{#{project.id} => \'CF#{project.id}-#{cf}-1\'}"),
                         :id => nil) + ' ' + (cf_obj.edit_tag_style == 'check_box' ? 
-                                          l(:label_cf_checked) : l(:label_cf_toggled_on)))
+                                  "#{cf_obj.name} #{l(:label_cf_checked)}" :
+                                  "#{cf_obj.name} #{l(:label_cf_toggled_on)}") , :class => cssclass[var])
             else
+              s <<  "<label class=#{cssclass[var]}>#{cf_obj.name} "              
               s <<  select_tag( html_id,
                   options_for_select( [ ["-", "{#{project.id} => \'\'}"],
                                         ["No", "{#{project.id} => \'CF#{project.id}-#{cf}-0\'}"],
                                         ["Yes", "{#{project.id} => \'CF#{project.id}-#{cf}-1\'}"] ], selected_value),
-                  :id => nil)
+                  :id => nil, :include_blank => true)
+              s << "</label>"
             end
           end
 
-          s << "</label></div>"
+          var = var == 0 ? 1 : 0
         end
 
         if Setting.plugin_event_notifications["issue_category_notifications"].include?(project.id.to_s)
@@ -116,12 +122,13 @@ module Patches
             ""
           label = "Issue Category"
 
-          s <<  "<div><label>#{label} "
+          s <<  "<label class=#{cssclass[var]}>#{label} "
           s <<  select_tag( html_id,
               options_for_select( [["-", "{#{project.id} => \'\'}" ]] + 
               project.issue_categories.collect{|g| [g.name, "{#{project.id} => \'IC-#{g.id}\'}" ]}, selected_value),
               :id => nil, :multiple => true)
-          s <<  "</label></div>"
+          s <<  "</label>"
+          var = var == 0 ? 1 : 0
         end
         s    
       end
