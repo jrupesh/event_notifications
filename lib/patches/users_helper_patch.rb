@@ -73,12 +73,37 @@ module Patches
 
           s <<  "<div><label>#{cf_obj.name} "
 
-          case cf_obj.format
+          case cf_obj.field_format
           when "list"
             s <<  select_tag( html_id,
                 options_for_select( [["-", "{#{project.id} => \'\'}" ]] + 
                 cf_obj.possible_values.collect{|g| [g.to_s, "{#{project.id} => \'CF#{project.id}-#{cf}-#{g.to_s}\'}" ]}, selected_value),
                 :id => nil, :multiple => true)
+          when "bool"
+            case cf_obj.edit_tag_style
+            when 'check_box', 'radio'
+              s << content_tag('label',
+                      check_box_tag(
+                        html_id,
+                        "{#{project.id} => \'CF#{project.id}-#{cf}-0\'}",
+                        selected_value.include?("{#{project.id} => \'CF#{project.id}-#{cf}-0\'}"),
+                        :id => nil) + ' ' + (cf_obj.edit_tag_style == 'check_box' ? 
+                                          l(:label_cf_unchecked) : l(:label_cf_toggled_off)))
+
+              s << content_tag('label',
+                      check_box_tag(
+                        html_id,
+                        "{#{project.id} => \'CF#{project.id}-#{cf}-1\'}",
+                        selected_value.include?("{#{project.id} => \'CF#{project.id}-#{cf}-1\'}"),
+                        :id => nil) + ' ' + (cf_obj.edit_tag_style == 'check_box' ? 
+                                          l(:label_cf_checked) : l(:label_cf_toggled_on)))
+            else
+              s <<  select_tag( html_id,
+                  options_for_select( [ ["-", "{#{project.id} => \'\'}"],
+                                        ["No", "{#{project.id} => \'CF#{project.id}-#{cf}-0\'}"],
+                                        ["Yes", "{#{project.id} => \'CF#{project.id}-#{cf}-1\'}"] ], selected_value),
+                  :id => nil)
+            end
           end
 
           s << "</label></div>"
