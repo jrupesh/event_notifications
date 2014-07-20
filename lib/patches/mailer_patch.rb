@@ -92,7 +92,7 @@ module Patches
 			    mail :to => recipients,
 			      :subject => "[#{container.project.name}] #{l(:label_attachment_new)}"
 		    else
-		    	attachments_added_without_events
+		    	attachments_added_without_events(attachments)
 		    end
       end
 
