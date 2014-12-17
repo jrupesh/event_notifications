@@ -6,11 +6,21 @@ module Patches
 
       base.class_eval do
         unloadable
+
+        before_save :set_new_issue_record
         alias_method_chain :notified_users, :events
       end
     end
 
     module InstanceMethods
+      def set_new_issue_record
+        @set_issue_record = new_record? ? 1 : 0
+      end
+
+      def is_issue_new_record?
+        @set_issue_record ||= 0
+      end
+
       def notified_users_with_events
         if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
           notified = []

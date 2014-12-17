@@ -59,8 +59,7 @@ module Patches
       def check_user_events(object)
         case object
         when Issue
-          #Assumption (Dirty Check) - Created on and modified date is not older than 5 sec. (Issue updated)
-          event = object.updated_on - object.created_on < 5 ? 'issue_added' : 'issue_updated'
+          event = object.is_issue_new_record? == 1 ? 'issue_added' : 'issue_updated'
           tracker_event = event.sub('issue') { object.tracker.name.downcase }
           events = notified_projects_events(object.project)
           return true if events.include?(tracker_event) == true
