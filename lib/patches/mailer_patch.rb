@@ -107,6 +107,42 @@ module Patches
           Setting.mail_from
         end
       end
+
+      def quality_tree_comment_added(comment,users,subject="")
+        news = comment.commented
+        redmine_headers 'Project' => news.project.identifier
+        @author = comment.author
+        message_id comment
+        references news
+        @news = news
+        @comment = comment
+        if comment.commented.is_a?(Issue)
+          @news_url = url_for(:controller => 'issues', :action => 'show', :id => news)
+        else
+          @news_url = url_for(:controller => 'news', :action => 'show', :id => news)
+        end
+        mail :to => users.map(&:mail),
+         :subject => "[#{news.project.name}] #{subject}: #{comment.author} mentioned you in a note."
+      end
+      
+      def quality_tree_comment_notifiers(comment,users,subject="")
+        news = comment.commented
+        redmine_headers 'Project' => news.project.identifier
+        @author = comment.author
+        message_id comment
+        references news
+        @news = news
+        @comment = comment
+        if comment.commented.is_a?(Issue)
+          @news_url = url_for(:controller => 'issues', :action => 'show', :id => news)
+        elsif comment.commented.is_a?(News)
+          @news_url = url_for(:controller => 'news', :action => 'show', :id => news)
+        else
+          @news_url = signin_path
+        end
+        mail :bcc => users.map(&:mail),
+         :subject => "[#{news.project.name}] #{subject}: #{comment.author} added a note."
+      end      
     end
   end
 end
