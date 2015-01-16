@@ -12,7 +12,7 @@ module Patches
         alias_method :old_mail, :mail
 
         define_method(:mail) do |headers={}, &block|
-          headers.merge! 'X-Mailer' => 'Redmine',
+          headers.reverse_merge! 'X-Mailer' => 'Redmine',
                   'X-Redmine-Host' => Setting.host_name,
                   'X-Redmine-Site' => Setting.app_title,
                   'X-Auto-Response-Suppress' => 'OOF',
@@ -124,7 +124,7 @@ module Patches
         mail :to => users.map(&:mail),
          :subject => "[#{news.project.name}] #{subject}: #{comment.author} mentioned you in a note."
       end
-      
+
       def quality_tree_comment_notifiers(comment,users,subject="")
         news = comment.commented
         redmine_headers 'Project' => news.project.identifier
@@ -142,7 +142,7 @@ module Patches
         end
         mail :bcc => users.map(&:mail),
          :subject => "[#{news.project.name}] #{subject}: #{comment.author} added a note."
-      end      
+      end
     end
   end
 end
