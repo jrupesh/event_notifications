@@ -6,7 +6,7 @@ module Patches
 
       base.class_eval do
         unloadable
-        helper :users 
+        helper :users
       end
     end
 

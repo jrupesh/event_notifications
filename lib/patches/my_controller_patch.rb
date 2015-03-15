@@ -1,6 +1,6 @@
 module Patches
   module MyControllerPatch
-    
+
     def self.included(base) # :nodoc:
       base.extend(ClassMethods)
       base.send(:include, InstanceMethods)
@@ -24,14 +24,14 @@ module Patches
           @user.pref.attributes = params[:pref]
           if @user.save
             @user.pref.save
-            @user.notify_events= (@user.mail_notification == 'selected' ? params[:user]["notified_project_ids"] : [])
+            @user.notify_events= (params[:user]["mail_notification"] == 'selected' ? params[:user]["notified_project_ids"] : [])
             set_language_if_valid @user.language
             flash[:notice] = l(:notice_account_updated)
             redirect_to my_account_path
             return
           end
         end
-      end      
+      end
     end
   end
 end

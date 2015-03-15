@@ -8,6 +8,7 @@ module Patches
       if Redmine::VERSION.to_s >= "2.4"
         base.class_eval do
           unloadable
+          alias_method_chain 'notified_project_ids=', 'events'
           alias_method_chain :update_notified_project_ids, :events
           alias_method_chain :notify_about?, :event
         end
@@ -34,8 +35,21 @@ module Patches
     end
 
     module InstanceMethods
+      def notified_project_ids_with_events=(ids)
+        logger.debug("PATCH - notified_project_ids_with_events ids #{ids}")
+        if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
+          @notified_projects_ids_changed = true
+          @notified_projects_ids = ids
+        else
+          logger.debug("PATCH - Event Notification Not enabled #{ids}")
+          # notified_project_ids_without_events = ids # Commented coz test fails.
+          @notified_projects_ids_changed = true
+          @notified_projects_ids = ids.map(&:to_i).uniq.select {|n| n > 0}
+        end
+      end
+
       def notify_events=(ids)
-        logger.debug("PATCH - update_notified_project_ids ids #{ids}")
+        logger.debug("PATCH - notify_events ids #{ids}")
         if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
           idss = (mail_notification == 'selected' ? Array.wrap(ids).reject(&:blank?) : [])
           ids_hash = {}
@@ -54,7 +68,7 @@ module Patches
           Member.update_all("mail_notification = #{connection.quoted_false}", ['user_id = ?', id])
           Member.update_all("mail_notification = #{connection.quoted_true}", ['user_id = ? AND project_id IN (?)', id, ids]) if ids && !ids.empty?
           @notified_projects_ids = nil
-          notified_projects_ids          
+          notified_projects_ids
         end
       end
 
@@ -124,7 +138,7 @@ module Patches
           elsif object.new_value_for('priority_id').present?
             status = notified_projects_events(object.project).include?("issue_priority_updated".sub('issue'){ object.journalized.tracker.name.downcase })
           end
-          
+
           if object.notes.present? && !status
             status = notified_projects_events(object.project).include?("issue_note_added".sub('issue'){ object.journalized.tracker.name.downcase })
           else
@@ -150,7 +164,7 @@ module Patches
                 object.author == self || is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.assigned_to_was)
               when 'selected'
                 # user receives notifications for created/assigned issues on unselected projects
-                object.author == self || is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.assigned_to_was) || 
+                object.author == self || is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.assigned_to_was) ||
                 check_user_events(object)
                 #How to check if the object is newly created or updated.
               when 'only_assigned'

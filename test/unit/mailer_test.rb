@@ -1,13 +1,25 @@
 require File.expand_path('../../test_helper', __FILE__)
 
-class ActiveSupport::TestCase
+class MailerTest < ActiveSupport::TestCase
+  include Redmine::I18n
+  include Rails::Dom::Testing::Assertions
+  fixtures :projects, :enabled_modules, :issues, :users, :email_addresses, :members,
+           :member_roles, :roles, :documents, :attachments, :news,
+           :tokens, :journals, :journal_details, :changesets,
+           :trackers, :projects_trackers,
+           :issue_statuses, :enumerations, :messages, :boards, :repositories,
+           :wikis, :wiki_pages, :wiki_contents, :wiki_content_versions,
+           :versions,
+           :comments
 
-  def setup_with_global
+  def setup
     Setting.plugin_event_notifications["enable_event_notifications"] = "on"
     ActionMailer::Base.deliveries.clear
     Setting.host_name = 'mydomain.foo'
     Setting.protocol = 'http'
     Setting.plain_text_mail = '0'
+    Setting.default_language = 'en'
+    User.current = nil
 
     role = Role.find(2)
     user = User.find(7)
@@ -16,24 +28,7 @@ class ActiveSupport::TestCase
 
     Member.update_all(:mail_notification => false, :events => [])
     User.update_all(:mail_notification => 'none')
-
-    setup_without_global
   end
-
-  alias_method_chain :setup, :global
-end
-
-class MailerTest < ActiveSupport::TestCase
-  include Redmine::I18n
-  include ActionDispatch::Assertions::SelectorAssertions
-  fixtures :projects, :enabled_modules, :issues, :users, :members,
-           :member_roles, :roles, :documents, :attachments, :news,
-           :tokens, :journals, :journal_details, :changesets,
-           :trackers, :projects_trackers,
-           :issue_statuses, :enumerations, :messages, :boards, :repositories,
-           :wikis, :wiki_pages, :wiki_contents,
-           :versions,
-           :comments
 
   def last_email
     mail = ActionMailer::Base.deliveries.last
@@ -64,7 +59,7 @@ class MailerTest < ActiveSupport::TestCase
     m.update_attributes(:mail_notification => true, :events => ["#{issue.tracker.name.downcase}_updated"])
 
     journal = issue.init_journal(user, issue)
-    journal.save! 
+    journal.save!
     journal.reload
 
     Mailer.deliver_issue_edit(journal)
@@ -95,7 +90,7 @@ class MailerTest < ActiveSupport::TestCase
     m.update_attributes(:mail_notification => true, :events => ["#{issue.tracker.name.downcase}_note_added"])
 
     journal = issue.init_journal(user, issue)
-    journal.save! 
+    journal.save!
     journal.reload
 
     Mailer.deliver_issue_edit(journal)
@@ -115,7 +110,7 @@ class MailerTest < ActiveSupport::TestCase
 
     journal.notes = ""
     journal.new_status
-    journal.save! 
+    journal.save!
     journal.reload
 
     Mailer.deliver_issue_edit(journal)
@@ -127,7 +122,7 @@ class MailerTest < ActiveSupport::TestCase
   test "issue_priority_updated should notify project members" do
 
     issue = Issue.first
-    d = JournalDetail.create!(:property => "attr", :prop_key => 'priority_id', 
+    d = JournalDetail.create!(:property => "attr", :prop_key => 'priority_id',
           :old_value => IssuePriority.find(4), :value => IssuePriority.find(5))
 
     journal = Journal.create!(:details => [d], :journalized => issue)
@@ -208,11 +203,23 @@ class MailerTest < ActiveSupport::TestCase
     m.update_attributes(:mail_notification => true, :events => ["wiki_content_updated"])
     wikicontent.reload
 
-    Mailer.wiki_content_added(wikicontent).deliver
 
-    mail = last_email
-    assert mail.bcc.include?('someone@foo.bar')
-    assert_equal mail.bcc.length, 1
+    with_each_language_as_default do
+      assert_difference 'ActionMailer::Base.deliveries.size' do
+        assert Mailer.wiki_content_updated(content).deliver
+        assert_select_email do
+          assert_select 'a[href=?]',
+            'http://mydomain.foo/projects/ecookbook/wiki/CookBook_documentation',
+            :text => 'CookBook documentation'
+        end
+      end
+    end
+
+    # Mailer.wiki_content_added(wikicontent).deliver
+
+    # mail = last_email
+    # assert mail.bcc.include?('someone@foo.bar')
+    # assert_equal mail.bcc.length, 1
   end
 
   test "tracker_add_issue should not notify project members" do
@@ -238,6 +245,6 @@ class MailerTest < ActiveSupport::TestCase
     mail = last_email
     assert mail.bcc.include?('someone@foo.bar')
     assert_equal mail.bcc.length, 1
-  end  
+  end
 end
 

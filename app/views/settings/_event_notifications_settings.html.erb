@@ -18,26 +18,26 @@
 <h3><%= l(:enable_notification_for_issue_attributes)%></h3>
 <p>
 	<h4><%= l(:enable_notification_for_cf)%></h4>
-	
-		 <% IssueCustomField.all.each do |cf| 
+
+		 <% IssueCustomField.all.each do |cf|
 		 	next if !%w(list user version).include?(cf.field_format) %>
 		 <p>
 	 			<label><%= cf.name %></label>
-			  <%= check_box_tag 'settings[issue_cf_notifications][]', cf.id.to_s, 
+			  <%= check_box_tag 'settings[issue_cf_notifications][]', cf.id.to_s,
 			  		(settings['issue_cf_notifications'] && settings['issue_cf_notifications'].any?) ?
 			  				 settings['issue_cf_notifications'].include?(cf.id.to_s) : false %>
 			  <br />
 		 </p>
 		<% end %>
 		<%= hidden_field_tag 'settings[issue_cf_notifications][]', '' %>
-	
+
 
 	<h4><%= l(:enable_notification_for_project_issue_categories)%></h4>
-	<% Project.all(:order => 'lft ASC').each do |project|
+	<% Project.all.order('lft ASC').each do |project|
 		if project.issue_categories.any? %>
 			<p>
 			  <label><%= project.name %></label>
-			  <%= check_box_tag 'settings[issue_category_notifications][]', project.id.to_s, 
+			  <%= check_box_tag 'settings[issue_category_notifications][]', project.id.to_s,
 			  		(settings['issue_category_notifications'] && settings['issue_category_notifications'].any?) ?
 			  				 settings['issue_category_notifications'].include?(project.id.to_s) : false %>
 			  <br />
@@ -46,6 +46,6 @@
 	<% end %>
 	<%= hidden_field_tag 'settings[issue_category_notifications][]', '' %>
 
-	
+
   <em><%= l(:issue_fields_description) %></em>
 </p>

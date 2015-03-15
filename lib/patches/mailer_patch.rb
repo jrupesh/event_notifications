@@ -20,12 +20,20 @@ module Patches
                   'From' => redmine_from,
                   'List-Id' => "<#{Setting.mail_from.to_s.gsub('@', '.')}>"
 
+          # Replaces users with their email addresses
+          [:to, :cc, :bcc].each do |key|
+            if headers[key].present?
+              headers[key] = self.class.email_addresses(headers[key])
+            end
+          end
+
           # Removes the author from the recipients and cc
           # if the author does not want to receive notifications
           # about what the author do
           if @author && @author.logged? && @author.pref.no_self_notified
-            headers[:to].delete(@author.mail) if headers[:to].is_a?(Array)
-            headers[:cc].delete(@author.mail) if headers[:cc].is_a?(Array)
+            addresses = @author.mails
+            headers[:to] -= addresses if headers[:to].is_a?(Array)
+            headers[:cc] -= addresses if headers[:cc].is_a?(Array)
           end
 
           if @author && @author.logged?
