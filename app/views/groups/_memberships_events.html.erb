@@ -1,0 +1,33 @@
+<% if Setting.plugin_event_notifications["enable_event_notifications"] == "on" %>
+  <td class="buttons" style="width: 3%;">
+    <%= link_to_function(
+        l(:button_edit_events),
+        "$('#tr-member-#{membership.id}').show(); return false;",
+        :class => 'icon icon-edit'
+      ) %>
+  </td>
+  </tr>
+  <tr id="tr-member-<%= membership.id %>" style="display:none;">
+    <td colspan="4">
+    <%= form_for(:membership, :remote => true,
+                 :url => principal_membership_path(group, membership), :method => :put,
+                 :html => { :id => "member-#{membership.id}-events-form"}) do %>
+        <p style="text-align: left;margin-left: 40%;"><% membership.getAvailableProjectEvents(membership.project).each do |event,event_label| %>
+        <label><%= check_box_tag 'membership[events_group][]', {membership.project.id => event}, membership.events.include?(event) %>
+        <%= event_label[0] %> <%= l(event_label[1].to_sym)%></label> <br/>
+        <% end %>
+        </p>
+        <p>
+        <fieldset class="box">
+        <%= customfields_issuecategories(membership.project, membership.events,
+          'membership[events_group][]', 1).html_safe %>
+        </fieldset>
+        </p>
+        <p style="text-align: left;margin-left: 40%;"><%= submit_tag l(:button_change) %>
+        <%= link_to_function(
+              l(:button_cancel),
+              "$('#tr-member-#{membership.id}').hide(); return false;"
+            ) %></p>
+    <% end %>
+    </td>
+<% end %>

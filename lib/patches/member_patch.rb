@@ -94,11 +94,11 @@ module Patches
                 events_to_update << e.sub('issue') { tracker.name.downcase }
               }
             else
-              events_to_update << e 
+              events_to_update << e
             end
           end
 
-          members = p.members.select {|m| m.principal.present? && 
+          members = p.members.select {|m| m.principal.present? &&
             (m.mail_notification? || m.principal.mail_notification == 'all')}
 
           Member.where(:project_id => [p.id]).update_all(:mail_notification => false, :events => [])

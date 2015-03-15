@@ -57,7 +57,7 @@ module Patches
         s.html_safe
       end
 
-      def customfields_issuecategories(project,user_project_events, html_id, var=0)
+      def customfields_issuecategories(project,user_project_events, html_id, var=0, cssenable=true)
         cssclass = ["splitcontentleft","splitcontentright"]
         s = ""
         Setting.plugin_event_notifications["issue_cf_notifications"].each do |cf|
@@ -68,17 +68,17 @@ module Patches
           cf_obj = custom_fields.fetch(cf_ids.index(cf.to_i))
 
           selected_value_list = user_project_events.select { |e| e if e.include?("CF#{project.id}-#{cf}-")}
-          selected_value = selected_value_list.any? ? 
+          selected_value = selected_value_list.any? ?
             selected_value_list.collect{|k| "{#{project.id} => \'#{k}\'}"} :
             ""
 
           case cf_obj.field_format
           when "list"
-            s <<  "<label class=#{cssclass[var]}>#{cf_obj.name} "
+            cssenable ? s <<  "<label class=#{cssclass[var]}>#{cf_obj.name} " : s <<  "<label>#{cf_obj.name} "
             s <<  select_tag( html_id,
-                options_for_select( [["-", "{#{project.id} => \'\'}" ]] + 
+                options_for_select( [["-", "{#{project.id} => \'\'}" ]] +
                 cf_obj.possible_values.collect{|g| [g.to_s, "{#{project.id} => \'CF#{project.id}-#{cf}-#{g.to_s}\'}" ]}, selected_value),
-                :id => nil, :multiple => true)
+                :id => nil, :multiple => true, :style => "width:80%;")
             s << "</label>"
 
           when "bool"
@@ -89,25 +89,25 @@ module Patches
                         html_id,
                         "{#{project.id} => \'CF#{project.id}-#{cf}-0\'}",
                         selected_value.include?("{#{project.id} => \'CF#{project.id}-#{cf}-0\'}"),
-                        :id => nil) + ' ' + (cf_obj.edit_tag_style == 'check_box' ? 
+                        :id => nil) + ' ' + (cf_obj.edit_tag_style == 'check_box' ?
                                   "#{cf_obj.name} #{l(:label_cf_unchecked)}" :
-                                  "#{cf_obj.name} #{l(:label_cf_toggled_off)}") , :class => cssclass[var])
+                                  "#{cf_obj.name} #{l(:label_cf_toggled_off)}") , :class => cssenable ? cssclass[var] : "")
 
               s << content_tag('label',
                       check_box_tag(
                         html_id,
                         "{#{project.id} => \'CF#{project.id}-#{cf}-1\'}",
                         selected_value.include?("{#{project.id} => \'CF#{project.id}-#{cf}-1\'}"),
-                        :id => nil) + ' ' + (cf_obj.edit_tag_style == 'check_box' ? 
+                        :id => nil) + ' ' + (cf_obj.edit_tag_style == 'check_box' ?
                                   "#{cf_obj.name} #{l(:label_cf_checked)}" :
-                                  "#{cf_obj.name} #{l(:label_cf_toggled_on)}") , :class => cssclass[var])
+                                  "#{cf_obj.name} #{l(:label_cf_toggled_on)}") , :class => cssenable ? cssclass[var] : "")
             else
-              s <<  "<label class=#{cssclass[var]}>#{cf_obj.name} "              
+              cssenable ? s <<  "<label class=#{cssclass[var]}>#{cf_obj.name} " : s <<  "<label>#{cf_obj.name} "
               s <<  select_tag( html_id,
                   options_for_select( [ ["-", "{#{project.id} => \'\'}"],
                                         ["No", "{#{project.id} => \'CF#{project.id}-#{cf}-0\'}"],
                                         ["Yes", "{#{project.id} => \'CF#{project.id}-#{cf}-1\'}"] ], selected_value),
-                  :id => nil, :include_blank => true)
+                  :id => nil, :include_blank => true, :style => "width:80%;")
               s << "</label>"
             end
           end
@@ -117,20 +117,20 @@ module Patches
 
         if Setting.plugin_event_notifications["issue_category_notifications"].include?(project.id.to_s)
           selected_value_list = user_project_events.select { |e| e if e.include?("IC-")}
-          selected_value = selected_value_list.any? ? 
+          selected_value = selected_value_list.any? ?
             selected_value_list.collect{|k| "{#{project.id} => \'#{k}\'}"} :
             ""
           label = "Issue Category"
 
-          s <<  "<label class=#{cssclass[var]}>#{label} "
+          cssenable ? s <<  "<label class=#{cssclass[var]}>#{label} " : s <<  "<label>#{label} "
           s <<  select_tag( html_id,
-              options_for_select( [["-", "{#{project.id} => \'\'}" ]] + 
+              options_for_select( [["-", "{#{project.id} => \'\'}" ]] +
               project.issue_categories.collect{|g| [g.name, "{#{project.id} => \'IC-#{g.id}\'}" ]}, selected_value),
-              :id => nil, :multiple => true)
+              :id => nil, :multiple => true, :style => "width:80%;")
           s <<  "</label>"
           var = var == 0 ? 1 : 0
         end
-        s    
+        s
       end
     end
   end
