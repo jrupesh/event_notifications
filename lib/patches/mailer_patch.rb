@@ -108,9 +108,9 @@ module Patches
         return Setting.mail_from if @author.nil?
         case Setting.plugin_event_notifications["event_notifications_with_author"]
         when "author"
-          "#{@author.name} [REDMINE] <#{@author.mail}>"
+          "#{@author.name} \[REDMINE\] <#{@author.mail}>"
         when "authorname"
-          "#{@author.name} [REDMINE] <#{Setting.mail_from.sub(/.*?</, '').gsub(">", "")}>"
+          "#{@author.name} \[REDMINE\] <#{Setting.mail_from.sub(/.*?</, '').gsub(">", "")}>"
         else
           Setting.mail_from
         end
