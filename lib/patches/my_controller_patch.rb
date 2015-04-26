@@ -1,6 +1,10 @@
 module Patches
   module MyControllerPatch
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 8a722605f3fcdbc5e464d0333904c8835984432a
     def self.included(base) # :nodoc:
       base.extend(ClassMethods)
       base.send(:include, InstanceMethods)
@@ -24,14 +28,22 @@ module Patches
           @user.pref.attributes = params[:pref]
           if @user.save
             @user.pref.save
+<<<<<<< HEAD
             @user.notify_events= (params[:user]["mail_notification"] == 'selected' ? params[:user]["notified_project_ids"] : [])
+=======
+            @user.notify_events= (@user.mail_notification == 'selected' ? params[:user]["notified_project_ids"] : [])
+>>>>>>> 8a722605f3fcdbc5e464d0333904c8835984432a
             set_language_if_valid @user.language
             flash[:notice] = l(:notice_account_updated)
             redirect_to my_account_path
             return
           end
         end
+<<<<<<< HEAD
       end
+=======
+      end      
+>>>>>>> 8a722605f3fcdbc5e464d0333904c8835984432a
     end
   end
 end

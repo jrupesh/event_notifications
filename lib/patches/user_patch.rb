@@ -8,7 +8,10 @@ module Patches
       if Redmine::VERSION.to_s >= "2.4"
         base.class_eval do
           unloadable
+<<<<<<< HEAD
           alias_method_chain 'notified_project_ids=', 'events'
+=======
+>>>>>>> 8a722605f3fcdbc5e464d0333904c8835984432a
           alias_method_chain :update_notified_project_ids, :events
           alias_method_chain :notify_about?, :event
         end
@@ -35,6 +38,7 @@ module Patches
     end
 
     module InstanceMethods
+<<<<<<< HEAD
       def notified_project_ids_with_events=(ids)
         logger.debug("PATCH - notified_project_ids_with_events ids #{ids}")
         if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
@@ -50,6 +54,10 @@ module Patches
 
       def notify_events=(ids)
         logger.debug("PATCH - notify_events ids #{ids}")
+=======
+      def notify_events=(ids)
+        logger.debug("PATCH - update_notified_project_ids ids #{ids}")
+>>>>>>> 8a722605f3fcdbc5e464d0333904c8835984432a
         if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
           idss = (mail_notification == 'selected' ? Array.wrap(ids).reject(&:blank?) : [])
           ids_hash = {}
@@ -68,7 +76,11 @@ module Patches
           Member.update_all("mail_notification = #{connection.quoted_false}", ['user_id = ?', id])
           Member.update_all("mail_notification = #{connection.quoted_true}", ['user_id = ? AND project_id IN (?)', id, ids]) if ids && !ids.empty?
           @notified_projects_ids = nil
+<<<<<<< HEAD
           notified_projects_ids
+=======
+          notified_projects_ids          
+>>>>>>> 8a722605f3fcdbc5e464d0333904c8835984432a
         end
       end
 
