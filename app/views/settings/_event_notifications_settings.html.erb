@@ -18,13 +18,7 @@
 <h3><%= l(:enable_notification_for_issue_attributes)%></h3>
 <p>
 	<h4><%= l(:enable_notification_for_cf)%></h4>
-<<<<<<< HEAD
-
 		 <% IssueCustomField.all.each do |cf|
-=======
-	
-		 <% IssueCustomField.all.each do |cf| 
->>>>>>> 8a722605f3fcdbc5e464d0333904c8835984432a
 		 	next if !%w(list user version).include?(cf.field_format) %>
 		 <p>
 	 			<label><%= cf.name %></label>

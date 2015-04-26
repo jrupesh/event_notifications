@@ -14,23 +14,16 @@ require 'patches/groups_controller_patch'
 require 'patches/principal_memberships_controller_patch'
 
 require 'patches/mailer_patch'
-if Redmine::VERSION.to_s < "2.4"
-  require 'patches/my_controller_patch'
-end
 
 ActionDispatch::Callbacks.to_prepare do
   require_dependency 'hooks/event_notification_hook_listener'
-end
-
-if Redmine::VERSION.to_s < "2.4"
-  require 'patches/my_controller_patch'
 end
 
 Redmine::Plugin.register :event_notifications do
   name 'Event Notifications plugin'
   author 'Rupesh J'
   description 'Customizes redmine project notification settings for every project event.'
-  version '2.0.1'
+  version '3.0.0'
   author_url 'mailto:rupeshj@esi-group.com'
 
   settings :default => {

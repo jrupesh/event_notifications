@@ -5,22 +5,11 @@ module Patches
       base.extend(ClassMethods)
       base.send(:include, InstanceMethods)
 
-      if Redmine::VERSION.to_s >= "2.4"
-        base.class_eval do
-          unloadable
-<<<<<<< HEAD
-          alias_method_chain 'notified_project_ids=', 'events'
-=======
->>>>>>> 8a722605f3fcdbc5e464d0333904c8835984432a
-          alias_method_chain :update_notified_project_ids, :events
-          alias_method_chain :notify_about?, :event
-        end
-      else
-        base.class_eval do
-          unloadable
-          # alias_method_chain 'notified_project_ids=', 'events'
-          alias_method_chain :notify_about?, :event
-        end
+      base.class_eval do
+        unloadable
+        alias_method_chain 'notified_project_ids=', 'events'
+        alias_method_chain :update_notified_project_ids, :events
+        alias_method_chain :notify_about?, :event
       end
     end
 
@@ -38,7 +27,7 @@ module Patches
     end
 
     module InstanceMethods
-<<<<<<< HEAD
+
       def notified_project_ids_with_events=(ids)
         logger.debug("PATCH - notified_project_ids_with_events ids #{ids}")
         if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
@@ -49,38 +38,6 @@ module Patches
           # notified_project_ids_without_events = ids # Commented coz test fails.
           @notified_projects_ids_changed = true
           @notified_projects_ids = ids.map(&:to_i).uniq.select {|n| n > 0}
-        end
-      end
-
-      def notify_events=(ids)
-        logger.debug("PATCH - notify_events ids #{ids}")
-=======
-      def notify_events=(ids)
-        logger.debug("PATCH - update_notified_project_ids ids #{ids}")
->>>>>>> 8a722605f3fcdbc5e464d0333904c8835984432a
-        if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
-          idss = (mail_notification == 'selected' ? Array.wrap(ids).reject(&:blank?) : [])
-          ids_hash = {}
-          idss.each do |h|
-            eval(h).each do |key, value|
-              ids_hash.has_key?(key) ? ids_hash[key] << value : ids_hash[key] = [value]
-            end
-          end
-          members.update_all(:mail_notification => false)
-          if ids_hash.keys.any?
-            members.where(:project_id => ids_hash.keys).update_all(:mail_notification => true)
-            members.each { |m| m.update_attributes!(:events => ids_hash[m.project_id]) if ids_hash.keys.include?(m.project_id) }
-          end
-          notified_projects_ids
-        else
-          Member.update_all("mail_notification = #{connection.quoted_false}", ['user_id = ?', id])
-          Member.update_all("mail_notification = #{connection.quoted_true}", ['user_id = ? AND project_id IN (?)', id, ids]) if ids && !ids.empty?
-          @notified_projects_ids = nil
-<<<<<<< HEAD
-          notified_projects_ids
-=======
-          notified_projects_ids          
->>>>>>> 8a722605f3fcdbc5e464d0333904c8835984432a
         end
       end
 
