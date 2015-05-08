@@ -13,9 +13,11 @@ module Patches
     module InstanceMethods
       def notified_users_with_events
         if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
+          logger.debug("Notified Users : Select users.")
+
           notified = journalized.notified_users
-          notified += journalized.project.notified_users(self) 
-          notified = notified.select {|u| u.active?}          
+          notified += journalized.project.notified_users(self)
+          notified = notified.select {|u| u.active?}
           notified.uniq!
           if private_notes?
             notified = notified.select {|user| user.allowed_to?(:view_private_notes, journalized.project)}
