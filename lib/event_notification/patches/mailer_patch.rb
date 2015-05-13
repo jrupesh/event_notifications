@@ -64,6 +64,12 @@ module EventNotification
           end
           set_language_if_valid @initial_language
 
+          Rails.logger.info(" --------------------------- ")
+          # Rails.logger.info("Mail to : #{ headers[:to].is_a?(Array) ? headers[:to] : :to }")
+          # Rails.logger.info("Mail cc : #{ headers[:cc].is_a?(Array) ? headers[:cc] : :cc }")
+          Rails.logger.info("Mail bcc: #{ headers[:bcc].is_a?(Array) ? headers[:bcc] : :bcc }")
+          Rails.logger.info(" --------------------------- ")
+
           m
           end
         end

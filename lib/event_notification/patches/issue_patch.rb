@@ -16,7 +16,7 @@ module EventNotification
 
       module InstanceMethods
         def create_journal_with_ghost
-          return if User.current.ghost?
+          return unless !User.current.ghost?
           create_journal_without_ghost
         end
 
