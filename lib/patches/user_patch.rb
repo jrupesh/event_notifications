@@ -71,14 +71,17 @@ module Patches
       end
 
       def check_user_events(object)
+        logger.debug("Event Notification : Checking User Notification.")
         case object
         when Issue
+          logger.debug("Event Notification : Issue.")
           event = object.is_issue_new_record? == 1 ? 'issue_added' : 'issue_updated'
           tracker_event = event.sub('issue') { object.tracker.name.downcase }
           events = notified_projects_events(object.project)
           return true if events.include?(tracker_event) == true
 
           object.custom_field_values.each do |cfv|
+            return true if cfv.custom_field.field_format == 'user' && cfv.value.to_s == self.id.to_s
             return true if events.include?("CF#{object.project.id}-#{cfv.custom_field.id}-#{cfv.value}") == true
           end
 
@@ -101,6 +104,7 @@ module Patches
           notified_projects_events(object.project).include?("message_posted")
         # Below are wrt to ISSUE notifications.
         when Journal
+          logger.debug("Event Notification : Journal.")
           status = false
           if object.new_status.present?
             status = notified_projects_events(object.project).include?("issue_status_updated".sub('issue'){ object.journalized.tracker.name.downcase })
@@ -118,8 +122,10 @@ module Patches
       end
 
       def notify_about_with_event?(object)
+        logger.debug("Notify User about event in #{object.id}")
         return false if self.class.get_notification == false
         if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
+          logger.debug("Event Notification plugin enabled.")
           if mail_notification == 'all'
             true
           elsif mail_notification.blank? || mail_notification == 'none'
