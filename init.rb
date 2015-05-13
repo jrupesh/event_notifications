@@ -12,6 +12,7 @@ require 'event_notification/patches/wiki_content_patch'
 require 'event_notification/patches/watchers_controller_patch'
 require 'event_notification/patches/groups_controller_patch'
 require 'event_notification/patches/principal_memberships_controller_patch'
+require 'event_notification/patches/user_preference_patch'
 
 require 'event_notification/patches/mailer_patch'
 

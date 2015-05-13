@@ -28,6 +28,9 @@ module EventNotification
       end
 
       module InstanceMethods
+        def ghost?
+          self.admin? && self.pref[:ghost_mode] == '1'
+        end
 
         def notified_project_ids_with_events=(ids)
           logger.debug("PATCH - notified_project_ids_with_events ids #{ids}")
@@ -125,7 +128,7 @@ module EventNotification
 
         def notify_about_with_event?(object)
           logger.debug("Notify User about event in #{object.id}")
-          return false if self.class.get_notification == false
+          return false if self.class.get_notification == false || User.current.ghost?
           if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
             logger.debug("Event Notification plugin enabled.")
             if mail_notification == 'all'

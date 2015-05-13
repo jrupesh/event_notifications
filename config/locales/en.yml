@@ -41,3 +41,6 @@ en:
   label_cf_toggled_off: toggled No
   label_cf_toggled_on: toggled Yes
   label_notify: Email Notifications
+
+  label_ghost_mode: Ghost Mode
+  warning_ghost_mode: "You are in 'Ghost' mode, none of your ticket updates will be journalized and notified"

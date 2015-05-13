@@ -10,10 +10,16 @@ module EventNotification
 
           before_save :set_new_issue_record
           alias_method_chain :notified_users, :events
+          alias_method_chain :create_journal, :ghost
         end
       end
 
       module InstanceMethods
+        def create_journal_with_ghost
+          return if User.current.ghost?
+          create_journal_without_ghost
+        end
+
         def set_new_issue_record
           @set_issue_record = new_record? ? 1 : 0
         end
@@ -23,6 +29,7 @@ module EventNotification
         end
 
         def notified_users_with_events
+          return [] if User.current.ghost?
           if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
             notified = []
             # Author and assignee are always notified unless they have been

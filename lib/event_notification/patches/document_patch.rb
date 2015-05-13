@@ -13,6 +13,7 @@ module EventNotification
 
       module InstanceMethods
   	    def notified_users_with_events
+          return [] if User.current.ghost?
           if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
     	      notified =  project.notified_users(self)
     	      notified.reject! {|user| !visible?(user)}
