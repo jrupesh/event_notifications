@@ -1,18 +1,22 @@
-module Patches
-  module PrincipalMembershipsControllerPatch
+module EventNotification
+  module Patches
+    module PrincipalMembershipsControllerPatch
 
-    def self.included(base) # :nodoc:
-      base.send(:include, InstanceMethods)
+      def self.included(base) # :nodoc:
+        base.send(:include, InstanceMethods)
 
-      base.class_eval do
-        unloadable
-        helper :users
+        base.class_eval do
+          unloadable
+          helper :users
+        end
       end
-    end
 
-    module InstanceMethods
+      module InstanceMethods
+      end
     end
   end
 end
 
-PrincipalMembershipsController.send(:include, Patches::PrincipalMembershipsControllerPatch)
+unless PrincipalMembershipsController.included_modules.include? EventNotification::Patches::PrincipalMembershipsControllerPatch
+  PrincipalMembershipsController.send(:include, EventNotification::Patches::PrincipalMembershipsControllerPatch)
+end

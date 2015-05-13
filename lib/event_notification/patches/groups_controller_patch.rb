@@ -1,18 +1,22 @@
-module Patches
-  module GroupsControllerPatch
+module EventNotification
+  module Patches
+    module GroupsControllerPatch
 
-    def self.included(base) # :nodoc:
-      base.send(:include, InstanceMethods)
+      def self.included(base) # :nodoc:
+        base.send(:include, InstanceMethods)
 
-      base.class_eval do
-        unloadable
-        helper :users
+        base.class_eval do
+          unloadable
+          helper :users
+        end
       end
-    end
 
-    module InstanceMethods
+      module InstanceMethods
+      end
     end
   end
 end
 
-GroupsController.send(:include, Patches::GroupsControllerPatch)
+unless GroupsController.included_modules.include? EventNotification::Patches::GroupsControllerPatch
+  GroupsController.send(:include, EventNotification::Patches::GroupsControllerPatch)
+end

@@ -1,22 +1,22 @@
 require 'redmine'
 
-require 'patches/users_helper_patch'
-require 'patches/user_patch'
-require 'patches/project_patch'
-require 'patches/member_patch'
-require 'patches/issue_patch'
-require 'patches/document_patch'
-require 'patches/journal_patch'
-require 'patches/message_patch'
-require 'patches/wiki_content_patch'
-require 'patches/watchers_controller_patch'
-require 'patches/groups_controller_patch'
-require 'patches/principal_memberships_controller_patch'
+require 'event_notification/patches/users_helper_patch'
+require 'event_notification/patches/user_patch'
+require 'event_notification/patches/project_patch'
+require 'event_notification/patches/member_patch'
+require 'event_notification/patches/issue_patch'
+require 'event_notification/patches/document_patch'
+require 'event_notification/patches/journal_patch'
+require 'event_notification/patches/message_patch'
+require 'event_notification/patches/wiki_content_patch'
+require 'event_notification/patches/watchers_controller_patch'
+require 'event_notification/patches/groups_controller_patch'
+require 'event_notification/patches/principal_memberships_controller_patch'
 
-require 'patches/mailer_patch'
+require 'event_notification/patches/mailer_patch'
 
 ActionDispatch::Callbacks.to_prepare do
-  require_dependency 'hooks/event_notification_hook_listener'
+  require_dependency 'event_notification/hooks/event_notification_hook_listener'
 end
 
 Redmine::Plugin.register :event_notifications do
