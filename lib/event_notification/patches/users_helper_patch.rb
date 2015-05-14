@@ -17,7 +17,7 @@ module EventNotification
           s = ''
           if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
             displaycontent = show == true ? "" : ", style='display:none;'"
-            s << "<fieldset class='box'#{displaycontent}>"
+            s << "<fieldset class=\"box event_#{project.id}\"#{displaycontent}>"
 
             cssclass = ["splitcontentleft","splitcontentright"]
             var = 0
@@ -36,7 +36,9 @@ module EventNotification
                             'user[notified_project_ids][]',
                             {project.id => tracker_event},
                             user_project_events.include?(tracker_event),
-                            :id => nil) + " \"#{tracker.name}\" " + l(event_label.sub('issue_'){''}.to_sym) , :class => cssclass[var])
+                            :id => nil) + " \"#{tracker.name}\" " +
+                          l(event_label.sub('issue_'){''}.to_sym),
+                            :class => "#{cssclass[var]} event_#{project.id}")
                   var = var == 0 ? 1 : 0
                 end
               else
@@ -45,7 +47,7 @@ module EventNotification
                           'user[notified_project_ids][]',
                           {project.id => event},
                           user_project_events.include?(event),
-                          :id => nil) + ' ' + l(event_label.to_sym) , :class => cssclass[var])
+                          :id => nil) + ' ' + l(event_label.to_sym) , :class => "#{cssclass[var]} event_#{project.id}")
                 var = var == 0 ? 1 : 0
               end
             end
@@ -75,7 +77,7 @@ module EventNotification
 
             case cf_obj.field_format
             when "list"
-              cssenable ? s <<  "<label class=#{cssclass[var]}>#{cf_obj.name} " : s <<  "<label>#{cf_obj.name} "
+              cssenable ? s <<  "<label class=\"#{cssclass[var]} event_#{project.id}\">#{cf_obj.name} " : s <<  "<label>#{cf_obj.name} "
               s <<  select_tag( html_id,
                   options_for_select( [["-", "{#{project.id} => \'\'}" ]] +
                   cf_obj.possible_values.collect{|g| [g.to_s, "{#{project.id} => \'CF#{project.id}-#{cf}-#{g.to_s}\'}" ]}, selected_value),
@@ -92,7 +94,7 @@ module EventNotification
                           selected_value.include?("{#{project.id} => \'CF#{project.id}-#{cf}-0\'}"),
                           :id => nil) + ' ' + (cf_obj.edit_tag_style == 'check_box' ?
                                     "#{cf_obj.name} #{l(:label_cf_unchecked)}" :
-                                    "#{cf_obj.name} #{l(:label_cf_toggled_off)}") , :class => cssenable ? cssclass[var] : "")
+                                    "#{cf_obj.name} #{l(:label_cf_toggled_off)}") , :class => cssenable ? "#{cssclass[var]} event_#{project.id}" : "")
 
                 s << content_tag('label',
                         check_box_tag(
@@ -101,9 +103,9 @@ module EventNotification
                           selected_value.include?("{#{project.id} => \'CF#{project.id}-#{cf}-1\'}"),
                           :id => nil) + ' ' + (cf_obj.edit_tag_style == 'check_box' ?
                                     "#{cf_obj.name} #{l(:label_cf_checked)}" :
-                                    "#{cf_obj.name} #{l(:label_cf_toggled_on)}") , :class => cssenable ? cssclass[var] : "")
+                                    "#{cf_obj.name} #{l(:label_cf_toggled_on)}") , :class => cssenable ? "#{cssclass[var]} event_#{project.id}" : "")
               else
-                cssenable ? s <<  "<label class=#{cssclass[var]}>#{cf_obj.name} " : s <<  "<label>#{cf_obj.name} "
+                cssenable ? s <<  "<label class=\"#{cssclass[var]} event_#{project.id}>#{cf_obj.name}\" " : s <<  "<label>#{cf_obj.name} "
                 s <<  select_tag( html_id,
                     options_for_select( [ ["-", "{#{project.id} => \'\'}"],
                                           ["No", "{#{project.id} => \'CF#{project.id}-#{cf}-0\'}"],
@@ -123,7 +125,7 @@ module EventNotification
               ""
             label = "Issue Category"
 
-            cssenable ? s <<  "<label class=#{cssclass[var]}>#{label} " : s <<  "<label>#{label} "
+            cssenable ? s <<  "<label class=\"#{cssclass[var]} event_#{project.id}\">#{label} " : s <<  "<label>#{label} "
             s <<  select_tag( html_id,
                 options_for_select( [["-", "{#{project.id} => \'\'}" ]] +
                 project.issue_categories.collect{|g| [g.name, "{#{project.id} => \'IC-#{g.id}\'}" ]}, selected_value),

@@ -21,8 +21,7 @@ module EventNotification
           end
 
           respond_to do |format|
-            format.js do
-            end
+            format.js {}
           end
         end
       end

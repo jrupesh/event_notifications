@@ -28,6 +28,10 @@ module EventNotification
       end
 
       module InstanceMethods
+        def notified_events_projects_ids
+          @notified_events_projects_ids ||= memberships.select { |m| m.events.reject{ |x| !x.is_a?(String) }.any? }.collect(&:project_id)
+        end
+
         def ghost?
           self.admin? && self.pref[:ghost_mode] == '1'
         end
@@ -70,7 +74,7 @@ module EventNotification
 
       	def notified_projects_events(project)
           #For a given project, Return the list of events selected by the user.
-          proj_events = Hash[memberships.map { |m| [m.project_id, m.events] }]
+          proj_events = Hash[memberships.map { |m| [m.project_id, m.events.reject{ |x| !x.is_a?(String) } ] }]
           proj_events.has_key?(project.id) ? proj_events[project.id] : []
         end
 
@@ -122,12 +126,16 @@ module EventNotification
             else
               false
             end
+            return status if status || !journal.journalized.is_a?(Issue)
+            journal.journalized.custom_field_values.each do |cfv|
+              return true if cfv.custom_field.field_format == 'user' && cfv.value.to_s == self.id.to_s
+              return true if events.include?("CF#{object.project.id}-#{cfv.custom_field.id}-#{cfv.value}") == true
+            end
             status
           end
         end
 
         def notify_about_with_event?(object)
-          logger.debug("Notify User about event in #{object.id}")
           return false if self.class.get_notification == false || User.current.ghost?
           if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
             logger.debug("Event Notification plugin enabled.")
@@ -145,7 +153,7 @@ module EventNotification
                 when 'selected'
                   # user receives notifications for created/assigned issues on unselected projects
                   object.author == self || is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.assigned_to_was) ||
-                  check_user_events(object)
+                  (notified_projects_events(object.project).any? && check_user_events(object))
                   #How to check if the object is newly created or updated.
                 when 'only_assigned'
                   is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.assigned_to_was)
@@ -153,7 +161,7 @@ module EventNotification
                   object.author == self
                 end
               when News, Journal, Message, Document, WikiContent
-                check_user_events(object)
+                notified_projects_events(object.project).any? && check_user_events(object)
               end
             end
           else

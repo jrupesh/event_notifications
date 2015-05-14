@@ -11,26 +11,41 @@
   <%= render_project_nested_lists(@user.projects) do |project|
 
         if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
-          value =  {project.id => project.name}
-          html_opts = { :id => nil, :onchange => 'if (this.checked == true) {$( this ).parent().next().show();}
-                                        else {$( this ).parent().next().hide();}' }
+          value =  {project.id => project.id}
+          # html_opts = { :id => nil, :onchange => 'if (this.checked == true) {$( this ).parent().next().show();}
+          #                               else { $( this ).parent().next().hide(); }'}
+          html_opts = { :id => nil,
+            :onchange => "if (this.checked == true) { $( \".event_#{project.id}\" ).show(); }
+                  else { $( \".event_#{project.id}\" ).hide();$( \".event_#{project.id} input\" ).prop( \"checked\", false );
+                  $( \".event_#{project.id} select option\" ).prop( \"selected\", false ); }" }
+
+          bool_val = @user.notified_events_projects_ids.include?(project.id)
+
+          hidden_field_tag( 'user[notified_project_ids][]', "#{value}", :id => "hidden_#{project.id}" ) +
+          content_tag('label',
+            check_box_tag(
+              'somename[]',
+               '1',
+               bool_val,
+               html_opts
+               ) + ' ' + h(project.name)
+          ) +  render_project_events_lists(project, bool_val)
         else
           value = project.id
           html_opts = { :id => nil }
+          bool_val = @user.notified_projects_ids.include?(project.id)
+          content_tag('label',
+            check_box_tag(
+              'user[notified_project_ids][]',
+               value,
+               bool_val,
+               html_opts
+               ) + ' ' + h(project.name)
+          ) +  render_project_events_lists(project, bool_val)
         end
-        bool_val = @user.notified_projects_ids.include?(project.id)
-
-        content_tag('label', 
-          check_box_tag(
-            'user[notified_project_ids][]',
-             value,
-             bool_val,
-             html_opts
-             ) + ' ' + h(project.name)
-        ) +  render_project_events_lists(project, bool_val) 
       end %>
   <%= hidden_field_tag 'user[notified_project_ids][]', '' %>
-  <p><em class="info"><%= l(:text_user_mail_option) %></em></p>
+  <p><em class="info"><%= l(:text_user_mail_event_notification) %></em></p>
 <% end %>
 
 <%= fields_for :pref, @user.pref do |pref_fields| %>

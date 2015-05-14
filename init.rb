@@ -31,6 +31,8 @@ Redmine::Plugin.register :event_notifications do
     'enable_event_notifications'        => false,
     'issue_cf_notifications'            => [],
     'issue_category_notifications'      => [],
+    'issue_involved_notified'           => false,
+    'issue_involved_in_related_notified'=> false,
     'event_notifications_with_author'   => false },
   	:partial => 'settings/event_notifications_settings'
 end

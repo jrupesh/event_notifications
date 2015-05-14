@@ -1,7 +1,7 @@
 <%
 if Setting.plugin_event_notifications["enable_event_notifications"] == "on" && watched.is_a?(Issue)
   content = ''.html_safe
-  lis = watched.project.notified_users_with_events(watched).uniq.collect do |user|
+  lis = watched.project.notified_users_with_events(watched).uniq.sort_by(&:name).collect do |user|
     s = ''.html_safe
     s << avatar(user, :size => "16").to_s
     s << link_to_user(user, :class => 'user')

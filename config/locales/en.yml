@@ -44,3 +44,4 @@ en:
 
   label_ghost_mode: Ghost Mode
   warning_ghost_mode: "You are in 'Ghost' mode, none of your ticket updates will be journalized and notified"
+  text_user_mail_event_notification: "For unselected projects, you will only receive notifications about things you watch or you're involved in (eg. issues you're the author or assignee or user custom fields)."

@@ -1,5 +1,5 @@
+$('#watchersheading').remove();
 <% if !@issue.nil? %>
-	$('#watchersheading').remove();
   $('#autowatchers').html('<%= escape_javascript(render :partial => 'watchers/auto_watchers', :locals => {:watched => @issue}) %>');
 <% else %>
   alert('<%= raw(escape_javascript(l(:notice_failed_to_load_watchers, :errors => @issue.errors.full_messages.join(', ')))) %>');
