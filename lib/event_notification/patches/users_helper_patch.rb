@@ -48,7 +48,7 @@ module EventNotification
                             'user[notified_project_ids][]',
                             {project.id => "#{event}-board-#{board.id}"},
                             user_project_events.include?("#{event}-board-#{board.id}"),
-                            :id => nil) + ' ' + "#{l(event_label.to_sym)} #{board.name}" , :class => "#{cssclass[var]} event_#{project.id}")
+                            :id => nil) + ' ' + "#{l(event_label.to_sym)} \"#{board.name}\"" , :class => "#{cssclass[var]} event_#{project.id}")
                   var = var == 0 ? 1 : 0
                 end
               else

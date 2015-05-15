@@ -53,7 +53,11 @@ module EventNotification
             # Author and assignee are always notified unless they have been locked or have refused that
             custom_field_users = []
 
-            collect_related_issues.each do |issue|
+            issues = collect_related_issues
+
+            return notified unless !issues.nil?
+
+            issues.each do |issue|
               next if issue == self
 
               if issue.author && issue.author.active? && %w( all selected ).include?( issue.author.mail_notification )
@@ -89,7 +93,7 @@ module EventNotification
             end
             notified += collect_involved_related_users
 
-            notified = notified.select {|u| u.active? && u.notify_about?(self)}
+            notified =   notified.select {|u| u.active? && u.notify_about?(self)}
             notified +=  project.notified_users_with_events(self)
 
             notified.uniq!
