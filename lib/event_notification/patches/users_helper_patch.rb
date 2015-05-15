@@ -41,6 +41,16 @@ module EventNotification
                             :class => "#{cssclass[var]} event_#{project.id}")
                   var = var == 0 ? 1 : 0
                 end
+              elsif event.include?("message_posted")
+                project.boards.each do |board|
+                  s <<  content_tag('label',
+                          check_box_tag(
+                            'user[notified_project_ids][]',
+                            {project.id => "#{event}-board-#{board.id}"},
+                            user_project_events.include?("#{event}-board-#{board.id}"),
+                            :id => nil) + ' ' + "#{l(event_label.to_sym)} #{board.name}" , :class => "#{cssclass[var]} event_#{project.id}")
+                  var = var == 0 ? 1 : 0
+                end
               else
                 s <<  content_tag('label',
                         check_box_tag(

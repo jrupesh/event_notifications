@@ -7,7 +7,7 @@ en:
   ev_issue_note_added: Issue notes added.
   ev_issue_status_updated: Issue status changed.
   ev_issue_priority_updated: Issue priority changed.
-  ev_message_posted: Message posted.
+  ev_message_posted: Message posted in forum
   ev_news_added: News added.
   ev_news_comment_added: News comment added
   ev_wiki_content_added: Wiki added.

@@ -110,7 +110,7 @@ module EventNotification
           when Project
             notified_projects_events(object).include?("file_added")
           when Message
-            notified_projects_events(object.project).include?("message_posted")
+            notified_projects_events(object.project).include?("message_posted-board-#{object.id}")
           # Below are wrt to ISSUE notifications.
           when Journal
             logger.debug("Event Notification : Journal.")
