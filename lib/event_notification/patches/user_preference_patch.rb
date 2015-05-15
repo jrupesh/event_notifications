@@ -17,6 +17,9 @@ module EventNotification
       module InstanceMethods
         def ghost_mode; self[:ghost_mode] end
         def ghost_mode=(enabled); self[:ghost_mode]=enabled end
+
+        def involved_in_related_notified; (self[:involved_in_related_notified] == true || self[:involved_in_related_notified] == '1'); end
+        def involved_in_related_notified=(value); self[:involved_in_related_notified]=value; end
       end
     end
   end

@@ -13,7 +13,10 @@
   <%= radio_button_tag 'settings[event_notifications_with_author]', "authorname", settings['event_notifications_with_author'] == "authorname" %>
   	<label style="margin-left:0px"><%= l(:event_notifications_with_author_authorname) %></label>
 </p>
-
+<p>
+  <label><%= l(:label_issue_involved_in_related_notified) %></label>
+  <%= check_box_tag 'settings[issue_involved_in_related_notified]', nil, settings['issue_involved_in_related_notified'] %>
+</p>
 
 <h3><%= l(:enable_notification_for_issue_attributes)%></h3>
 <p>
@@ -32,7 +35,7 @@
 
 
 	<h4><%= l(:enable_notification_for_project_issue_categories)%></h4>
-	<% Project.all.order('lft ASC').each do |project|
+	<% Project.includes(:issue_categories).all.order('lft ASC').each do |project|
 		if project.issue_categories.any? %>
 			<p>
 			  <label><%= project.name %></label>

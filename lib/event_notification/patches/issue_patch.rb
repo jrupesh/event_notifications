@@ -28,6 +28,52 @@ module EventNotification
           @set_issue_record ||= 0
         end
 
+        def collect_related_issues
+          # collect father, child and brother issues
+          issues = [self]
+          self.relations.each do |relation|
+            other_issue = relation.other_issue(self)
+            relation_type = relation.relation_type_for(self)
+            issues << other_issue if relation_type == IssueRelation::TYPE_IMPLEMENTED
+            if relation_type == IssueRelation::TYPE_IMPLEMENTS
+              father_issue = other_issue
+              father_issue.relations.each do |father_issue_relation|
+                father_other_issue = father_issue_relation.other_issue(father_issue)
+                father_relation_type = father_issue_relation.relation_type_for(father_issue)
+                issues << father_other_issue if father_relation_type == IssueRelation::TYPE_IMPLEMENTED
+              end
+            end
+          end
+          issues.uniq!
+        end
+
+        def collect_involved_related_users
+          notified = []
+          if Setting.plugin_event_notifications["issue_involved_in_related_notified"] == "on"
+            # Author and assignee are always notified unless they have been locked or have refused that
+            custom_field_users = []
+
+            collect_related_issues.each do |issue|
+              next if issue == self
+
+              if issue.author && issue.author.active? && %w( all selected ).include?( issue.author.mail_notification )
+                notified << issue.author if issue.author.pref[:involved_in_related_notified] == '1'
+              end
+
+              if issue.assigned_to && issue.assigned_to.active? && %w( all selected ).include?( issue.author.mail_notification )
+                notified << issue.assigned_to if issue.assigned_to.pref[:involved_in_related_notified] == '1'
+              end
+
+              issue.custom_values.each do |cv|
+                next if cv.custom_field.field_format != 'user'
+                custom_field_users << cv.value.to_i unless cv.value.nil?
+              end
+            end
+            notified += User.where(:id => custom_field_users).select { |u| u.pref[:involved_in_related_notified] == '1' } if custom_field_users.any?
+          end
+          notified
+        end
+
         def notified_users_with_events
           return [] if User.current.ghost?
           if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
@@ -41,8 +87,11 @@ module EventNotification
             if assigned_to_was
               notified += (assigned_to_was.is_a?(Group) ? assigned_to_was.users : [assigned_to_was])
             end
+            notified += collect_involved_related_users
+
             notified = notified.select {|u| u.active? && u.notify_about?(self)}
             notified +=  project.notified_users_with_events(self)
+
             notified.uniq!
             # Remove users that can not view the issue
             notified.reject! {|user| !visible?(user)}

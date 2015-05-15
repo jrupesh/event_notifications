@@ -53,4 +53,10 @@
   <%= pref_fields.check_box :no_self_notified %>
   <label for="pref_no_self_notified"><%= l(:label_user_mail_no_self_notified) %></label>
 </p>
+  <% if Setting.plugin_event_notifications["issue_involved_in_related_notified"] == "on" %>
+    <p>
+      <%= pref_fields.check_box :involved_in_related_notified %>
+      <label for="pref_involved_in_related_notified"><%= l(:label_involved_in_related_notified) %></label>
+    </p>
+  <% end %>
 <% end %>

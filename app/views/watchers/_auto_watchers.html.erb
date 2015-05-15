@@ -1,7 +1,7 @@
 <%
 if Setting.plugin_event_notifications["enable_event_notifications"] == "on" && watched.is_a?(Issue)
   content = ''.html_safe
-  lis = watched.project.notified_users_with_events(watched).uniq.sort_by(&:name).collect do |user|
+  lis = watched.notified_users_with_events.sort_by(&:name).collect do |user|
     s = ''.html_safe
     s << avatar(user, :size => "16").to_s
     s << link_to_user(user, :class => 'user')
@@ -9,7 +9,7 @@ if Setting.plugin_event_notifications["enable_event_notifications"] == "on" && w
   end%>
 
   <% if content.present? %>
-    <h3 id="watchersheading"><%= l(:label_issue_automatic_watchers) %> (<%= watched.project.notified_users_with_events(watched).uniq.size %>)</h3>
+    <h3 id="watchersheading"><%= l(:label_issue_automatic_watchers) %> (<%= watched.notified_users_with_events.size %>)</h3>
     <%= content_tag('ul', content, :class => 'autowatchers') %>
   <% end %>
 <% end %>

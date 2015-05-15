@@ -45,3 +45,7 @@ en:
   label_ghost_mode: Ghost Mode
   warning_ghost_mode: "You are in 'Ghost' mode, none of your ticket updates will be journalized and notified"
   text_user_mail_event_notification: "For unselected projects, you will only receive notifications about things you watch or you're involved in (eg. issues you're the author or assignee or user custom fields)."
+
+  label_issue_involved_notified: Enable Issue involved notification.
+  label_issue_involved_in_related_notified: Enable issue involved in related notification.
+  label_involved_in_related_notified: Always notify me of changes in tickets related to a ticket I'm involved in
