@@ -126,8 +126,9 @@ module EventNotification
             else
               false
             end
-            return status if status || !journal.journalized.is_a?(Issue)
-            journal.journalized.custom_field_values.each do |cfv|
+            return status if status || !object.journalized.is_a?(Issue)
+            events = notified_projects_events(object.journalized.project)
+            object.journalized.custom_field_values.each do |cfv|
               return true if cfv.custom_field.field_format == 'user' && cfv.value.to_s == self.id.to_s
               return true if events.include?("CF#{object.project.id}-#{cfv.custom_field.id}-#{cfv.value}") == true
             end
