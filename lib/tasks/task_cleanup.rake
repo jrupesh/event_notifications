@@ -51,6 +51,7 @@ END_DESC
           if !m.nil?
             if csv_line[2].starts_with?('issue') && !csv_line[3].nil?
               tracker = trackers[csv_line[3].to_i]
+              next if !events.nl? && events.include?("CF")
               m.events << csv_line[2].dup.sub('issue') { tracker.name.downcase } if !tracker.nil?
             elsif csv_line[2].starts_with?('message_post') && !csv_line[4].nil?
               m.events << "#{csv_line[2]}-board-#{csv_line[4]}"
