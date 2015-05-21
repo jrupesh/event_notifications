@@ -29,7 +29,7 @@ module EventNotification
           details.each do |detail|
             return if !%w(attachment relation).include?(detail.property)
             attachment_cnt += 1 if detail.property == 'attachment'
-            relation_cnt   += 1 if detail.property == 'relation'
+            relation_cnt   += 1 if detail.property == 'relation' && !detail.prop_key.starts_with?("block")
           end
           # Assume that relation and attachment cannot be added at the same time.
           @only_attachments = details.length == attachment_cnt  ? true : false
