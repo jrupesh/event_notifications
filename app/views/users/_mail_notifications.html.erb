@@ -60,7 +60,7 @@
       <label for="pref_involved_in_related_notified"><%= l(:label_involved_in_related_notified) %></label>
     </p>
   <% end %>
-  <% if Setting.notified_events.include?("issue_updated") %>
+  <% if Setting.plugin_event_notifications["issue_relation_attachment_notified"] == "on" && Setting.notified_events.include?("issue_updated") %>
     <p class="pref_selected">
       <%= pref_fields.check_box :attachment_notification %>
       <label for="pref_attachment_notification"><%= l(:label_attachment_notification) %></label>

@@ -23,6 +23,7 @@ module EventNotification
 
         def set_issue_updated_options
           # During issue update, Check if journal is only about relation added or Attachment added.
+          return unless Setting.plugin_event_notifications["issue_relation_attachment_notified"] == "on"
           return unless notes.blank?
           return unless details.any?
           logger.debug("Contains details.")

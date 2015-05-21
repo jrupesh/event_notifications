@@ -17,6 +17,11 @@
   <label><%= l(:label_issue_involved_in_related_notified) %></label>
   <%= check_box_tag 'settings[issue_involved_in_related_notified]', nil, settings['issue_involved_in_related_notified'] %>
 </p>
+<p>
+  <label><%= l(:label_issue_relation_attachment_notified) %></label>
+  <%= check_box_tag 'settings[issue_relation_attachment_notified]', nil, settings['issue_relation_attachment_notified'] %>
+</p>
+
 
 <h3><%= l(:enable_notification_for_issue_attributes)%></h3>
 <p>
