@@ -23,7 +23,9 @@ module EventNotification
 
         def set_issue_updated_options
           # During issue update, Check if journal is only about relation added or Attachment added.
-          return unless notes.blank? || details.any?
+          return unless notes.blank?
+          return unless details.any?
+          logger.debug("Contains details.")
           attachment_cnt  = 0
           relation_cnt    = 0
           details.each do |detail|
@@ -34,7 +36,7 @@ module EventNotification
           # Assume that relation and attachment cannot be added at the same time.
           @only_attachments = details.length == attachment_cnt  ? true : false
           @only_relations   = details.length == relation_cnt    ? true : false
-          logger.debug("Set variabled for Journal : Attachment or Relations.")
+          logger.debug("Set variable for Journal : Attachment or Relations.")
         end
 
         def notified_users_with_events
