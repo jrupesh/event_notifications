@@ -84,6 +84,7 @@ module EventNotification
           when Issue
             return false if object.current_journal && object.current_journal.only_attachments && !pref.attachment_notification
             return false if object.current_journal && object.current_journal.only_relations   && !pref.relation_notification
+            return true  if object.author == self || is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.assigned_to_was)
 
             logger.debug("Event Notification : Issue.")
             event = object.is_issue_new_record? == 1 ? 'issue_added' : 'issue_updated'
@@ -159,8 +160,7 @@ module EventNotification
                   object.author == self || is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.assigned_to_was)
                 when 'selected'
                   # user receives notifications for created/assigned issues on unselected projects
-                  object.author == self || is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.assigned_to_was) ||
-                  (notified_projects_events(object.project).any? && check_user_events(object))
+                  notified_projects_events(object.project).any? && check_user_events(object)
                   #How to check if the object is newly created or updated.
                 when 'only_assigned'
                   is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.assigned_to_was)
