@@ -4,8 +4,8 @@
       'user[mail_notification]',
       options_for_select(
          user_mail_notification_options(@user), @user.mail_notification),
-      :onchange => 'if (this.value == "selected") {$("#notified-projects").show();$("#involved_in_related_notified_option").show();}
-       else {$("#notified-projects").hide();$("#involved_in_related_notified_option").hide();}'
+      :onchange => 'if (this.value == "selected") {$("#notified-projects").show();$(".pref_selected").show();}
+       else {$("#notified-projects").hide();$(".pref_selected").hide();}'
      ) %>
 </p>
 <%= content_tag 'div', :id => 'notified-projects', :style => (@user.mail_notification == 'selected' ? '' : 'display:none;') do %>
@@ -55,9 +55,20 @@
   <label for="pref_no_self_notified"><%= l(:label_user_mail_no_self_notified) %></label>
 </p>
   <% if Setting.plugin_event_notifications["issue_involved_in_related_notified"] == "on" %>
-    <p id="involved_in_related_notified_option">
+    <p class="pref_selected">
       <%= pref_fields.check_box :involved_in_related_notified %>
       <label for="pref_involved_in_related_notified"><%= l(:label_involved_in_related_notified) %></label>
+    </p>
+  <% end %>
+  <% if Setting.notified_events.include?("issue_updated") %>
+    <p class="pref_selected">
+      <%= pref_fields.check_box :attachment_notification %>
+      <label for="pref_attachment_notification"><%= l(:label_attachment_notification) %></label>
+    </p>
+    <p class="pref_selected">
+      <%= pref_fields.check_box :relation_notification %>
+      <label for="pref_relation_notification"><%= l(:label_relation_notification) %></label>
+      <em class="info"><%= l(:text_relation_notification) %></em>
     </p>
   <% end %>
 <% end %>

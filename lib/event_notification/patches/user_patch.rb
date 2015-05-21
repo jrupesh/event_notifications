@@ -82,6 +82,9 @@ module EventNotification
           logger.debug("Event Notification : Checking User Notification.")
           case object
           when Issue
+            return false if object.current_journal && object.current_journal.only_attachments && !pref.attachment_notification
+            return false if object.current_journal && object.current_journal.only_relations   && !pref.relation_notification
+
             logger.debug("Event Notification : Issue.")
             event = object.is_issue_new_record? == 1 ? 'issue_added' : 'issue_updated'
             tracker_event = event.sub('issue') { object.tracker.name.downcase }
@@ -114,6 +117,9 @@ module EventNotification
           # Below are wrt to ISSUE notifications.
           when Journal
             logger.debug("Event Notification : Journal.")
+            return false if object.only_attachments && !pref.attachment_notification
+            return false if object.only_relations   && !pref.relation_notification
+
             status = false
             if object.new_status.present?
               status = notified_projects_events(object.project).include?("issue_status_updated".sub('issue'){ object.journalized.tracker.name.downcase })
