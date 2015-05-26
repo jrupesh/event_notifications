@@ -19,7 +19,7 @@ module EventNotification
             notified.reject! {|user| !visible?(user)}
             notified.collect(&:mail)
           else
-            recipients_without_events
+            notified_users_without_events
           end
         end
       end
