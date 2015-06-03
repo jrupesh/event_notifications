@@ -97,7 +97,7 @@ module EventNotification
   			    when 'Document'
   			      added_to_url = url_for(:controller => 'documents', :action => 'show', :id => container.id)
   			      added_to = "#{l(:label_document)}: #{container.title}"
-  			      recipients = container.recipients
+  			      recipients = container.notified_users
   			    end
   			    redmine_headers 'Project' => container.project.identifier
   			    @attachments = attachments
