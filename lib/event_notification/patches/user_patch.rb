@@ -79,12 +79,13 @@ module EventNotification
         end
 
         def check_user_events(object)
-          logger.debug("Event Notification : Checking User Notification.")
+          logger.debug("Event Notification : Checking User Notification for #{self.name}.")
           case object
           when Issue
-            return false if object.current_journal && object.current_journal.only_attachments && !pref.attachment_notification
-            return false if object.current_journal && object.current_journal.only_relations   && !pref.relation_notification
-            return true  if object.author == self || is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.assigned_to_was)
+            return false if object.current_journal && ( (object.current_journal.only_attachments && !pref.attachment_notification ) ||
+              (object.current_journal.only_relations   && !pref.relation_notification) )
+            return true  if (object.author == self) || is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.assigned_to_was)
+            return false if !notified_projects_events(object.project).any?
 
             logger.debug("Event Notification : Issue.")
             event = object.is_issue_new_record? == 1 ? 'issue_added' : 'issue_updated'
@@ -127,7 +128,7 @@ module EventNotification
             elsif object.new_value_for('priority_id').present?
               status = notified_projects_events(object.project).include?("issue_priority_updated".sub('issue'){ object.journalized.tracker.name.downcase })
             end
-
+            return status if status
             if object.notes.present? && !status
               status = notified_projects_events(object.project).include?("issue_note_added".sub('issue'){ object.journalized.tracker.name.downcase })
             else
@@ -146,7 +147,7 @@ module EventNotification
         def notify_about_with_event?(object)
           return false if self.class.get_notification == false || User.current.ghost?
           if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
-            logger.debug("Event Notification plugin enabled.")
+            logger.debug("Event Notification plugin enabled : #{mail_notification}")
             if mail_notification == 'all'
               true
             elsif mail_notification.blank? || mail_notification == 'none'
@@ -160,7 +161,7 @@ module EventNotification
                   object.author == self || is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.assigned_to_was)
                 when 'selected'
                   # user receives notifications for created/assigned issues on unselected projects
-                  notified_projects_events(object.project).any? && check_user_events(object)
+                  check_user_events(object)
                   #How to check if the object is newly created or updated.
                 when 'only_assigned'
                   is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.assigned_to_was)
