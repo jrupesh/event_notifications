@@ -37,12 +37,12 @@ module EventNotification
         end
 
         def notified_project_ids_with_events=(ids)
-          logger.debug("PATCH - notified_project_ids_with_events ids #{ids}")
+          logger.debug("Event Notifications: PATCH - notified_project_ids_with_events ids #{ids}")
           if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
             @notified_projects_ids_changed = true
             @notified_projects_ids = ids
           else
-            logger.debug("PATCH - Event Notification Not enabled #{ids}")
+            logger.debug("Event Notifications: PATCH - Event Notification Not enabled #{ids}")
             # notified_project_ids_without_events = ids # Commented coz test fails.
             @notified_projects_ids_changed = true
             @notified_projects_ids = ids.map(&:to_i).uniq.select {|n| n > 0}
@@ -53,7 +53,7 @@ module EventNotification
         def update_notified_project_ids_with_events
           if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
             if @notified_projects_ids_changed
-              logger.debug("PATCH - update_notified_project_ids notified_projects_ids #{notified_projects_ids}")
+              logger.debug("Event Notifications: PATCH - update_notified_project_ids notified_projects_ids #{notified_projects_ids}")
               ids = (mail_notification == 'selected' ? Array.wrap(notified_projects_ids).reject(&:blank?) : [])
               ids_hash = {}
               ids.each do |h|
@@ -79,7 +79,7 @@ module EventNotification
         end
 
         def check_user_events(object)
-          logger.debug("Event Notification : Checking User Notification for #{self.name}.")
+          logger.debug("Event Notifications: Checking User Notification for #{self.name}.")
           case object
           when Issue
             return false if object.current_journal && ( (object.current_journal.only_attachments && !pref.attachment_notification ) ||
@@ -87,7 +87,7 @@ module EventNotification
             return true  if (object.author == self) || is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.assigned_to_was)
             return false if !notified_projects_events(object.project).any?
 
-            logger.debug("Event Notification : Issue.")
+            logger.debug("Event Notifications: Issue.")
             event = object.is_issue_new_record? == 1 ? 'issue_added' : 'issue_updated'
             tracker_event = event.sub('issue') { object.tracker.name.downcase }
             events = notified_projects_events(object.project)
@@ -108,7 +108,7 @@ module EventNotification
             event = object.version > 1 ? 'wiki_content_updated' : 'wiki_content_added'
             notified_projects_events(object.project).include?(event)
           when Document
-            # logger.debug("Notifications for user #{id} #{login} #{object.project_id} #{notified_projects_events(object.project)}")
+            # logger.debug("Event Notifications: Notifications for user #{id} #{login} #{object.project_id} #{notified_projects_events(object.project)}")
             notified_projects_events(object.project).include?("document_added")
           when Version
             notified_projects_events(object.project).include?("file_added")
@@ -118,7 +118,7 @@ module EventNotification
             notified_projects_events(object.project).include?("message_posted-board-#{object.board_id}")
           # Below are wrt to ISSUE notifications.
           when Journal
-            logger.debug("Event Notification : Journal.")
+            logger.debug("Event Notifications: Journal.")
             return false if object.only_attachments && !pref.attachment_notification
             return false if object.only_relations   && !pref.relation_notification
 
@@ -147,7 +147,7 @@ module EventNotification
         def notify_about_with_event?(object)
           return false if self.class.get_notification == false || User.current.ghost?
           if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
-            logger.debug("Event Notification plugin enabled : #{mail_notification}")
+            logger.debug("Event Notifications: Mail notification option #{mail_notification}")
             if mail_notification == 'all'
               true
             elsif mail_notification.blank? || mail_notification == 'none'

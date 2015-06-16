@@ -25,7 +25,7 @@ module EventNotification
           # During issue update, Check if journal is only about relation added or Attachment added.
           return unless notes.blank?
           return unless details.any?
-          logger.debug("Contains details.")
+          logger.debug("Event Notifications: Contains details.")
           attachment_cnt  = 0
           relation_cnt    = 0
           cus_field_cnt   = 0
@@ -49,14 +49,13 @@ module EventNotification
           if notify?
             self.notify= details.length == cus_field_cnt ? false : true
           end
-          logger.debug("Set variable for Journal : Attachment or Relations.")
+          logger.debug("Event Notifications: Set variable for Journal : Attachment or Relations.")
         end
 
         def notified_users_with_events
           return [] if User.current.ghost? || User.get_notification == false
-          logger.debug("Notified Users : Get notification flag. #{User.get_notification}")
           if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
-            logger.debug("Notified Users : For journal save.")
+            logger.debug("Event Notifications: Notified Users : For journal save.")
 
             notified = journalized.notified_users
             notified += journalized.project.notified_users(self)
