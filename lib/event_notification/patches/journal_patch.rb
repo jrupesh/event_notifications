@@ -23,27 +23,40 @@ module EventNotification
 
         def set_issue_updated_options
           # During issue update, Check if journal is only about relation added or Attachment added.
-          return unless Setting.plugin_event_notifications["issue_relation_attachment_notified"] == "on"
           return unless notes.blank?
           return unless details.any?
           logger.debug("Contains details.")
           attachment_cnt  = 0
           relation_cnt    = 0
+          cus_field_cnt   = 0
+          rel_att_flag = Setting.plugin_event_notifications["issue_relation_attachment_notified"] == "on"
           details.each do |detail|
-            return if !%w(attachment relation).include?(detail.property)
-            attachment_cnt += 1 if detail.property == 'attachment'
-            relation_cnt   += 1 if detail.property == 'relation' && !detail.prop_key.starts_with?("block")
+            if rel_att_flag && %w(attachment relation).include?(detail.property)
+              attachment_cnt += 1 if detail.property == 'attachment'
+              relation_cnt   += 1 if detail.property == 'relation' && !detail.prop_key.starts_with?("block")
+            elsif (detail.property == 'cf' && detail.custom_field.disable_notification)
+              cus_field_cnt  += 1
+              if rel_att_flag
+                attachment_cnt += 1
+                relation_cnt   += 1
+              end
+            end
           end
           # Assume that relation and attachment cannot be added at the same time.
           @only_attachments = details.length == attachment_cnt  ? true : false
           @only_relations   = details.length == relation_cnt    ? true : false
+          # Disable notification when only Custom field with disabled notification is updated.
+          if notify?
+            self.notify= details.length == cus_field_cnt ? false : true
+          end
           logger.debug("Set variable for Journal : Attachment or Relations.")
         end
 
         def notified_users_with_events
-          return [] if User.current.ghost?
+          return [] if User.current.ghost? || User.get_notification == false
+          logger.debug("Notified Users : Get notification flag. #{User.get_notification}")
           if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
-            logger.debug("Notified Users : Select users.")
+            logger.debug("Notified Users : For journal save.")
 
             notified = journalized.notified_users
             notified += journalized.project.notified_users(self)

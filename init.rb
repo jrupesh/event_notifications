@@ -13,6 +13,7 @@ require 'event_notification/patches/watchers_controller_patch'
 require 'event_notification/patches/groups_controller_patch'
 require 'event_notification/patches/principal_memberships_controller_patch'
 require 'event_notification/patches/user_preference_patch'
+require 'event_notification/patches/custom_field_patch'
 
 require 'event_notification/patches/mailer_patch'
 
@@ -24,7 +25,7 @@ Redmine::Plugin.register :event_notifications do
   name 'Event Notifications plugin'
   author 'Rupesh J'
   description 'Customizes redmine project notification settings for every project event.'
-  version '2.0.1'
+  version '2.1.0'
   author_url 'mailto:rupeshj@esi-group.com'
 
   settings :default => {

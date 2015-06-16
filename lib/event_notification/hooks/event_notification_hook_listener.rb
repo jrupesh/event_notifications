@@ -25,6 +25,15 @@ module EventNotification
         s.html_safe
       end
 
+      def view_custom_fields_form_issue_custom_field(context={})
+        custom_field  = context[:custom_field]
+        f             = context[:form]
+        s     = ''
+        s << "<p>"
+        s << f.check_box(:disable_notification)
+        s << "</p>"
+        s.html_safe
+      end
     end
   end
 end

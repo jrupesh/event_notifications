@@ -79,7 +79,7 @@ module EventNotification
         end
 
         def notified_users_with_events
-          return [] if User.current.ghost?
+          return [] if User.current.ghost? || User.get_notification == false
           if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
             notified = []
             # Author and assignee are always notified unless they have been

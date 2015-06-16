@@ -53,3 +53,5 @@ en:
   label_relation_notification: Notify me whenever relations are added to issues.
   text_relation_notification: If unchecked only blocker relations added will be notified.
   label_issue_relation_attachment_notified: Enable Attachment and Relations notification to be disabled.
+
+  field_disable_notification: Disable notification
