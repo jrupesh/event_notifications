@@ -34,7 +34,7 @@ module EventNotification
             if rel_att_flag && %w(attachment relation).include?(detail.property)
               attachment_cnt += 1 if detail.property == 'attachment'
               relation_cnt   += 1 if detail.property == 'relation' && !detail.prop_key.starts_with?("block")
-            elsif (detail.property == 'cf' && detail.custom_field.disable_notification)
+            elsif (detail.property == 'cf' && detail.custom_field && detail.custom_field.disable_notification)
               cus_field_cnt  += 1
               if rel_att_flag
                 attachment_cnt += 1
