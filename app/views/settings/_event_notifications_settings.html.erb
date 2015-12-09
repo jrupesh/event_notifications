@@ -1,25 +1,25 @@
 <p>
   <label><%= l(:enable_event_notifications_settings) %></label>
-  <%= check_box_tag 'settings[enable_event_notifications]', nil, settings['enable_event_notifications'] %>
+  <%= check_box_tag 'settings[enable_event_notifications]', nil, settings[:enable_event_notifications] %>
   <br />
   <em><%= l(:enable_event_notifications_settings_description) %></em>
 </p>
 <p>
   <label><%= l(:event_notifications_with_author) %></label>
-  <%= radio_button_tag 'settings[event_notifications_with_author]', "default", settings['event_notifications_with_author'] == "default" %>
+  <%= radio_button_tag 'settings[event_notifications_with_author]', "default", settings[:event_notifications_with_author] == "default" %>
   	<label style="margin-left:0px"><%= l(:event_notifications_with_author_default) %></label><br/>
-  <%= radio_button_tag 'settings[event_notifications_with_author]', "author", settings['event_notifications_with_author']  == "author" %>
+  <%= radio_button_tag 'settings[event_notifications_with_author]', "author", settings[:event_notifications_with_author]  == "author" %>
   	<label style="margin-left:0px"><%= l(:event_notifications_with_author_author) %></label><br/>
-  <%= radio_button_tag 'settings[event_notifications_with_author]', "authorname", settings['event_notifications_with_author'] == "authorname" %>
+  <%= radio_button_tag 'settings[event_notifications_with_author]', "authorname", settings[:event_notifications_with_author] == "authorname" %>
   	<label style="margin-left:0px"><%= l(:event_notifications_with_author_authorname) %></label>
 </p>
 <p>
   <label><%= l(:label_issue_involved_in_related_notified) %></label>
-  <%= check_box_tag 'settings[issue_involved_in_related_notified]', nil, settings['issue_involved_in_related_notified'] %>
+  <%= check_box_tag 'settings[issue_involved_in_related_notified]', nil, settings[:issue_involved_in_related_notified] %>
 </p>
 <p>
   <label><%= l(:label_issue_relation_attachment_notified) %></label>
-  <%= check_box_tag 'settings[issue_relation_attachment_notified]', nil, settings['issue_relation_attachment_notified'] %>
+  <%= check_box_tag 'settings[issue_relation_attachment_notified]', nil, settings[:issue_relation_attachment_notified] %>
 </p>
 
 
@@ -31,8 +31,8 @@
 		 <p>
 	 			<label><%= cf.name %></label>
 			  <%= check_box_tag 'settings[issue_cf_notifications][]', cf.id.to_s,
-			  		(settings['issue_cf_notifications'] && settings['issue_cf_notifications'].any?) ?
-			  				 settings['issue_cf_notifications'].include?(cf.id.to_s) : false %>
+			  		(settings[:issue_cf_notifications] && settings[:issue_cf_notifications].any?) ?
+			  				 settings[:issue_cf_notifications].include?(cf.id.to_s) : false %>
 			  <br />
 		 </p>
 		<% end %>
@@ -45,8 +45,8 @@
 			<p>
 			  <label><%= project.name %></label>
 			  <%= check_box_tag 'settings[issue_category_notifications][]', project.id.to_s,
-			  		(settings['issue_category_notifications'] && settings['issue_category_notifications'].any?) ?
-			  				 settings['issue_category_notifications'].include?(project.id.to_s) : false %>
+			  		(settings[:issue_category_notifications] && settings[:issue_category_notifications].any?) ?
+			  				 settings[:issue_category_notifications].include?(project.id.to_s) : false %>
 			  <br />
 			</p>
 		<% end %>
