@@ -72,9 +72,17 @@ module EventNotification
           end
         end
 
+        def loaded_memberships
+          @loaded_memberships ||= memberships
+        end
+
+        def loaded_memberships=(arg)
+          @loaded_memberships = arg
+        end  
+
       	def notified_projects_events(project)
           #For a given project, Return the list of events selected by the user.
-          proj_events = Hash[memberships.map { |m| [m.project_id, m.events.reject{ |x| !x.is_a?(String) } ] }]
+          proj_events = Hash[loaded_memberships.map { |m| [m.project_id, m.events.reject{ |x| !x.is_a?(String) } ] }]
           proj_events.has_key?(project.id) ? proj_events[project.id] : []
         end
 
@@ -100,6 +108,12 @@ module EventNotification
 
             return true if !object.category.nil? && events.include?("IC-#{object.category.id}") == true
 
+            if object.is_issue_new_record? != 1 && object.current_journal
+              journal_obj = object.current_journal
+              return true if journal_obj.new_status.present? && events.include?("issue_status_updated".sub('issue'){ object.tracker.name.downcase })
+              return true if journal_obj.new_value_for('priority_id').present? && events.include?("issue_priority_updated".sub('issue'){ object.tracker.name.downcase })
+              return true if journal_obj.notes.present? && events.include?("issue_note_added".sub('issue'){ object.tracker.name.downcase })
+            end
             return false
           when News
             object.comments_count > 0 ? notified_projects_events(object.project).include?("news_comment_added") :
@@ -116,31 +130,6 @@ module EventNotification
             notified_projects_events(object).include?("file_added")
           when Message
             notified_projects_events(object.project).include?("message_posted-board-#{object.board_id}")
-          # Below are wrt to ISSUE notifications.
-          when Journal
-            logger.debug("Event Notifications: Journal.")
-            return false if object.only_attachments && !pref.attachment_notification
-            return false if object.only_relations   && !pref.relation_notification
-
-            status = false
-            if object.new_status.present?
-              status = notified_projects_events(object.project).include?("issue_status_updated".sub('issue'){ object.journalized.tracker.name.downcase })
-            elsif object.new_value_for('priority_id').present?
-              status = notified_projects_events(object.project).include?("issue_priority_updated".sub('issue'){ object.journalized.tracker.name.downcase })
-            end
-            return status if status
-            if object.notes.present? && !status
-              status = notified_projects_events(object.project).include?("issue_note_added".sub('issue'){ object.journalized.tracker.name.downcase })
-            else
-              false
-            end
-            return status if status || !object.journalized.is_a?(Issue)
-            events = notified_projects_events(object.journalized.project)
-            object.journalized.custom_field_values.each do |cfv|
-              return true if cfv.custom_field.field_format == 'user' && cfv.value.to_s == self.id.to_s
-              return true if events.include?("CF#{object.project.id}-#{cfv.custom_field.id}-#{cfv.value}") == true
-            end
-            status
           end
         end
 

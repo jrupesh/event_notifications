@@ -58,7 +58,6 @@ module EventNotification
             logger.debug("Event Notifications: Notified Users : For journal save.")
 
             notified = journalized.notified_users
-            notified += journalized.project.notified_users(self)
             notified = notified.select {|u| u.active?}
             notified.uniq!
             if private_notes?

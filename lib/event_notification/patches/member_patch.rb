@@ -13,18 +13,8 @@ module EventNotification
       end
 
       module EventsConstant
-        AVAILABLE_EVENTS = {'issue_added'           => "ev_issue_added",
-                            'issue_updated'         => "ev_issue_updated",
-                            'issue_note_added'      => "ev_issue_note_added",
-                            'issue_status_updated'  => "ev_issue_status_updated",
-                            'issue_priority_updated'=> "ev_issue_priority_updated",
-                            'document_added'        => "ev_document_added",
-                            'file_added'            => "ev_file_added",
-                            'message_posted'        => "ev_message_posted",
-                            'news_added'            => "ev_news_added",
-                            'news_comment_added'    => "ev_news_comment_added",
-                            'wiki_content_added'    => "ev_wiki_content_added",
-                            'wiki_content_updated'  => "ev_wiki_content_updated" }.freeze
+        AVAILABLE_EVENTS = Redmine::Notifiable.all.
+                      inject({}){ |h,v| h[v.name] = "ev_#{v.name}";h }.freeze
       end
 
       module InstanceMethods
