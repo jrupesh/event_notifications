@@ -82,6 +82,7 @@ class MailerTest < ActiveSupport::TestCase
   end
 
   test "issue_note_added should notify project members" do
+    return if !Setting.notified_events.include?('issue_note_added')
 
     issue = Issue.first
     user = User.first
@@ -100,7 +101,7 @@ class MailerTest < ActiveSupport::TestCase
   end
 
   test "issue_status_updated should notify project members" do
-
+    return if !Setting.notified_events.include?('issue_status_updated')
     journal = Journal.find 1
     issue = journal.journalized
 
@@ -120,7 +121,7 @@ class MailerTest < ActiveSupport::TestCase
   end
 
   test "issue_priority_updated should notify project members" do
-
+    return if !Setting.notified_events.include?('issue_priority_updated')
     issue = Issue.first
     d = JournalDetail.create!(:property => "attr", :prop_key => 'priority_id',
           :old_value => IssuePriority.find(4), :value => IssuePriority.find(5))
@@ -144,7 +145,7 @@ class MailerTest < ActiveSupport::TestCase
     message = Message.find(1)
     m = message.project.members.last
     m.user.update_attributes(:mail_notification => 'selected')
-    m.update_attributes(:mail_notification => true, :events => ["message_posted"])
+    m.update_attributes(:mail_notification => true, :events => ["message_posted-board-#{message.board_id}"])
     message.reload
 
     Mailer.message_posted(message).deliver
@@ -206,7 +207,7 @@ class MailerTest < ActiveSupport::TestCase
 
     with_each_language_as_default do
       assert_difference 'ActionMailer::Base.deliveries.size' do
-        assert Mailer.wiki_content_updated(content).deliver
+        assert Mailer.wiki_content_updated(wikicontent).deliver
         assert_select_email do
           assert_select 'a[href=?]',
             'http://mydomain.foo/projects/ecookbook/wiki/CookBook_documentation',
@@ -245,6 +246,14 @@ class MailerTest < ActiveSupport::TestCase
     mail = last_email
     assert mail.bcc.include?('someone@foo.bar')
     assert_equal mail.bcc.length, 1
+  end
+
+  def with_each_language_as_default(&block)
+    valid_languages.each do |lang|
+      with_settings :default_language => lang.to_s do
+        yield lang
+      end
+    end
   end
 end
 
