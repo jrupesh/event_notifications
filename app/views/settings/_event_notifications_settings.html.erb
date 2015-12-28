@@ -15,7 +15,9 @@
 </p>
 <p>
   <label><%= l(:label_issue_involved_in_related_notified) %></label>
-  <%= check_box_tag 'settings[issue_involved_in_related_notified]', nil, settings[:issue_involved_in_related_notified] %>
+  <%= select_tag 'settings[issue_involved_in_related_notified]',
+      options_for_select( IssueRelation::TYPES.collect { |k,v| [ l(v[:name]), k ]},
+      settings[:issue_involved_in_related_notified]), {:include_blank => true, :style => "width:200px"} %>
 </p>
 <p>
   <label><%= l(:label_issue_relation_attachment_notified) %></label>

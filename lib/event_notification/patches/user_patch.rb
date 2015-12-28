@@ -72,6 +72,14 @@ module EventNotification
           end
         end
 
+        def default_notifier
+          @default_notifier ||= false
+        end
+
+        def default_notifier=(arg)
+          @default_notifier = arg
+        end
+
         def loaded_memberships
           @loaded_memberships ||= memberships
         end
@@ -90,6 +98,7 @@ module EventNotification
           logger.debug("Event Notifications: Checking User Notification for #{self.name}.")
           case object
           when Issue
+            return true if default_notifier
             return false if object.current_journal && ( (object.current_journal.only_attachments && !pref.attachment_notification ) ||
               (object.current_journal.only_relations   && !pref.relation_notification) )
             return true  if (object.author == self) || is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.assigned_to_was)
@@ -147,7 +156,7 @@ module EventNotification
                 case mail_notification
                 when 'only_my_events'
                   # user receives notifications for created/assigned issues on unselected projects
-                  object.author == self || is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.assigned_to_was)
+                  object.author == self || is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.assigned_to_was) || default_notifier
                 when 'selected'
                   # user receives notifications for created/assigned issues on unselected projects
                   check_user_events(object)

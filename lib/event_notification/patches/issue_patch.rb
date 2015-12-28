@@ -29,43 +29,50 @@ module EventNotification
         end
 
         def collect_related_issues
+          logger.debug("Event Notifications : related issues.")
           # collect father, child and brother issues
-          issues = [self]
+          rel_issues = []
           self.relations.each do |relation|
             other_issue = relation.other_issue(self)
             relation_type = relation.relation_type_for(self)
-            issues << other_issue if relation_type == IssueRelation::TYPE_IMPLEMENTED
-            if relation_type == IssueRelation::TYPE_IMPLEMENTS
+            rel_issues << other_issue if relation_type == Setting.plugin_event_notifications["issue_involved_in_related_notified"]
+            if relation_type == IssueRelation::TYPES[Setting.plugin_event_notifications["issue_involved_in_related_notified"]][:sym]
               father_issue = other_issue
               father_issue.relations.each do |father_issue_relation|
                 father_other_issue = father_issue_relation.other_issue(father_issue)
                 father_relation_type = father_issue_relation.relation_type_for(father_issue)
-                issues << father_other_issue if father_relation_type == IssueRelation::TYPE_IMPLEMENTED
+                rel_issues << father_other_issue if father_relation_type == Setting.plugin_event_notifications["issue_involved_in_related_notified"]
               end
             end
           end
-          issues.uniq!
+          # logger.debug("Event Notifications : related issues collected : #{rel_issues.map(&:id).join(", ")}.")
+          rel_issues.uniq
         end
 
         def collect_involved_related_users
           notified = []
-          if Setting.plugin_event_notifications["issue_involved_in_related_notified"] == "on"
+          if Setting.plugin_event_notifications["issue_involved_in_related_notified"].present?
+            logger.debug("Event Notifications : Colelcting related issues involved users.")
             # Author and assignee are always notified unless they have been locked or have refused that
             custom_field_users = []
 
-            issues = collect_related_issues
+            involved_issues = collect_related_issues
 
-            return notified unless !issues.nil?
+            return notified unless involved_issues.any?
 
-            issues.each do |issue|
+            involved_issues.each do |issue|
               next if issue == self
 
-              if issue.author && issue.author.active? && %w( all selected ).include?( issue.author.mail_notification )
-                notified << issue.author if issue.author.pref[:involved_in_related_notified] == '1'
+              if issue.author && issue.author.active? && %w( all selected ).include?( issue.author.mail_notification ) &&
+                  issue.author.pref[:involved_in_related_notified] == '1'
+                # logger.debug("Event Notifications : Other issue #{issue.id} Author involved : #{issue.author}.")
+                notified << issue.author
               end
 
-              if issue.assigned_to && issue.assigned_to.active? && %w( all selected ).include?( issue.author.mail_notification )
-                notified << issue.assigned_to if issue.assigned_to.pref[:involved_in_related_notified] == '1'
+              if issue.assigned_to && issue.assigned_to.active? && %w( all selected ).include?( issue.author.mail_notification ) &&
+                  issue.assigned_to.pref[:involved_in_related_notified] == '1'
+                # logger.debug("Event Notifications : Other issue #{issue.id} Assignee involved : #{issue.assigned_to}.")
+                notified << issue.assigned_to
               end
 
               issue.custom_values.each do |cv|
@@ -75,6 +82,7 @@ module EventNotification
             end
             notified += User.where(:id => custom_field_users).select { |u| u.pref[:involved_in_related_notified] == '1' } if custom_field_users.any?
           end
+          notified.each { |u| u.default_notifier=(true) }
           notified
         end
 
@@ -92,8 +100,9 @@ module EventNotification
               notified += (assigned_to_was.is_a?(Group) ? assigned_to_was.users : [assigned_to_was])
             end
             notified += collect_involved_related_users
-
+            # logger.debug("Event Notifications : Current users selected : #{ notified.map(&:name).join(", ") }")
             notified =   notified.select {|u| u.active? && u.notify_about?(self)}
+            # logger.debug("Event Notifications : Current users after check : #{ notified.map(&:name).join(", ") }")
             notified +=  project.notified_users_with_events(self)
 
             notified.uniq!

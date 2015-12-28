@@ -5,7 +5,7 @@
       options_for_select(
          user_mail_notification_options(@user), @user.mail_notification),
       :onchange => 'if (this.value == "selected") {$("#notified-projects").show();$(".pref_selected").show();}
-       else {$("#notified-projects").hide();$(".pref_selected").hide();}'
+       else {$("#notified-projects").hide();$(".pref_selected").hide();if(this.value == "only_my_events"){$(".pref_only_my_events").show();}; }'
      ) %>
 </p>
 <%= content_tag 'div', :id => 'notified-projects', :style => (@user.mail_notification == 'selected' ? '' : 'display:none;') do %>
@@ -54,8 +54,8 @@
   <%= pref_fields.check_box :no_self_notified %>
   <label for="pref_no_self_notified"><%= l(:label_user_mail_no_self_notified) %></label>
 </p>
-  <% if Setting.plugin_event_notifications["issue_involved_in_related_notified"] == "on" %>
-    <p class="pref_selected">
+  <% if Setting.plugin_event_notifications["issue_involved_in_related_notified"].present? %>
+    <p class="pref_selected pref_only_my_events">
       <%= pref_fields.check_box :involved_in_related_notified %>
       <label for="pref_involved_in_related_notified"><%= l(:label_involved_in_related_notified) %></label>
     </p>
