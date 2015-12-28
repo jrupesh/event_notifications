@@ -45,7 +45,7 @@ module EventNotification
               end
             end
           end
-          logger.debug("Event Notifications : related issues collected : #{rel_issues.map(&:id).join(", ")}.")
+          # logger.debug("Event Notifications : related issues collected : #{rel_issues.map(&:id).join(", ")}.")
           rel_issues.uniq
         end
 
@@ -65,13 +65,13 @@ module EventNotification
 
               if issue.author && issue.author.active? && %w( all selected ).include?( issue.author.mail_notification ) &&
                   issue.author.pref[:involved_in_related_notified] == '1'
-                logger.debug("Event Notifications : Other issue #{issue.id} Author involved : #{issue.author}.")
+                # logger.debug("Event Notifications : Other issue #{issue.id} Author involved : #{issue.author}.")
                 notified << issue.author
               end
 
               if issue.assigned_to && issue.assigned_to.active? && %w( all selected ).include?( issue.author.mail_notification ) &&
                   issue.assigned_to.pref[:involved_in_related_notified] == '1'
-                logger.debug("Event Notifications : Other issue #{issue.id} Assignee involved : #{issue.assigned_to}.")
+                # logger.debug("Event Notifications : Other issue #{issue.id} Assignee involved : #{issue.assigned_to}.")
                 notified << issue.assigned_to
               end
 
@@ -100,13 +100,9 @@ module EventNotification
               notified += (assigned_to_was.is_a?(Group) ? assigned_to_was.users : [assigned_to_was])
             end
             notified += collect_involved_related_users
-
-            logger.debug("Event Notifications : Current users selected : #{ notified.map(&:name).join(", ") }")
-
+            # logger.debug("Event Notifications : Current users selected : #{ notified.map(&:name).join(", ") }")
             notified =   notified.select {|u| u.active? && u.notify_about?(self)}
-
-            logger.debug("Event Notifications : Current users after check : #{ notified.map(&:name).join(", ") }")
-
+            # logger.debug("Event Notifications : Current users after check : #{ notified.map(&:name).join(", ") }")
             notified +=  project.notified_users_with_events(self)
 
             notified.uniq!
