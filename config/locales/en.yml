@@ -7,7 +7,7 @@ en:
   ev_issue_note_added: Issue notes added.
   ev_issue_status_updated: Issue status changed.
   ev_issue_priority_updated: Issue priority changed.
-  ev_message_posted: Message posted.
+  ev_message_posted: Message posted in forum
   ev_news_added: News added.
   ev_news_comment_added: News comment added
   ev_wiki_content_added: Wiki added.
@@ -41,3 +41,17 @@ en:
   label_cf_toggled_off: toggled No
   label_cf_toggled_on: toggled Yes
   label_notify: Email Notifications
+
+  label_ghost_mode: Ghost Mode
+  warning_ghost_mode: "You are in 'Ghost' mode, none of your ticket updates will be journalized and notified"
+  text_user_mail_event_notification: "For unselected projects, you will only receive notifications about things you watch or you're involved in (eg. issues you're the author or assignee or user custom fields)."
+
+  label_issue_involved_notified: Enable Issue involved notification.
+  label_issue_involved_in_related_notified: Enable issue involved in related notification.
+  label_involved_in_related_notified: Always notify me of changes in tickets related to a ticket I'm involved in
+  label_attachment_notification: Notify me whenever attachments are added to issues.
+  label_relation_notification: Notify me whenever relations are added to issues.
+  text_relation_notification: If unchecked only blocker relations added will be notified.
+  label_issue_relation_attachment_notified: Enable Attachment and Relations notification to be disabled.
+
+  field_disable_notification: Disable notification

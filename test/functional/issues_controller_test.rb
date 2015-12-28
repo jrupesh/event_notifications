@@ -122,6 +122,69 @@ class IssuesControllerTest < ActionController::TestCase
     assert ActionMailer::Base.deliveries.last.bcc.include?('someone@foo.bar')
   end
 
+  def test_post_update_with_attachment_should_notify_with_attachments
+    issue = Issue.find(1)
+    project = issue.project
+    tracker = issue.tracker
+    m = project.members.last
+    m.user.update_attributes(:mail_notification => 'selected')
+    m.update_attributes(:mail_notification => true, :events => ["#{tracker.name.downcase}_updated"])
+    # user = User.find(7)
+
+    Setting.plugin_event_notifications["issue_relation_attachment_notified"] = "on"
+    m.user.pref["attachment_notification"] = true
+    m.user.pref.save
+    m.user.reload
+
+    ActionMailer::Base.deliveries.clear
+    set_tmp_attachments_directory
+    @request.session[:user_id] = 2
+
+    assert_difference('Journal.count') do
+      assert_difference('JournalDetail.count', 1) do
+        put :update, :id => 1, :attachments => {'1' => {
+          'file' => uploaded_test_file('testfile.txt', 'text/plain'), 'description' => 'test file'}}
+      end
+    end
+    assert_redirected_to :action => 'show', :id => '1'
+    issue.reload
+
+    assert_equal 1, ActionMailer::Base.deliveries.size
+
+    mail = ActionMailer::Base.deliveries.last
+    assert_not_nil mail
+    assert_equal 1, mail.bcc.length
+    assert mail.bcc.include?('someone@foo.bar')
+  end
+
+  def test_post_update_with_attachment_should_not_notify_with_attachments  
+    issue = Issue.find(1)
+    project = issue.project
+    tracker = issue.tracker
+    m = project.members.last
+    m.user.update_attributes(:mail_notification => 'selected')
+    m.update_attributes(:mail_notification => true, :events => ["#{tracker.name.downcase}_updated"])
+    # user = User.find(7)
+
+    Setting.plugin_event_notifications["issue_relation_attachment_notified"] = "on"
+    m.user.pref["attachment_notification"] = false
+    m.user.pref.save
+    m.user.reload
+
+    ActionMailer::Base.deliveries.clear
+    set_tmp_attachments_directory
+    @request.session[:user_id] = 2
+
+    assert_difference('Journal.count') do
+      assert_difference('JournalDetail.count', 1) do
+        put :update, :id => 1, :attachments => {'2' => {
+          'file' => uploaded_test_file('testfile.txt', 'text/plain'), 'description' => 'test file'}}
+      end
+    end
+
+    assert_equal 0, ActionMailer::Base.deliveries.size
+  end
+
   def test_put_update_without_custom_fields_param
     issue = Issue.find(1)
     project = issue.project
@@ -179,7 +242,7 @@ class IssuesControllerTest < ActionController::TestCase
           events_to_update << e.sub('issue') { tracker.name.downcase }
         }
       else
-        events_to_update << e 
+        events_to_update << e
       end
     end
     m.update_attributes(:mail_notification => true, :events => events_to_update)
@@ -398,7 +461,7 @@ class IssuesControllerTest < ActionController::TestCase
 
   #   issue.reload
   #   ActionMailer::Base.deliveries.clear
-    
+
   #   issue = Issue.find(1)
   #   assert_equal 1, issue.status_id
   #   @request.session[:user_id] = 2
