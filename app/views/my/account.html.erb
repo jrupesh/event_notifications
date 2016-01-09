@@ -19,11 +19,9 @@
 <% account_tabs = [
   {:name => 'general',      :partial => 'my/general_settings',      :label => :label_general,  :f => f},
   {:name => 'notification', :partial => 'my/notification_settings', :label => :label_notify,   :f => f }
-  ]%>   
+  ]%>
 
 <%= render_tabs account_tabs %>
-
-<p><%= submit_tag l(:button_save) %></p>
 
 <% end %>
 
