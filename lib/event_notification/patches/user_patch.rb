@@ -86,7 +86,7 @@ module EventNotification
 
         def loaded_memberships=(arg)
           @loaded_memberships = arg
-        end  
+        end
 
       	def notified_projects_events(project)
           #For a given project, Return the list of events selected by the user.
@@ -95,7 +95,7 @@ module EventNotification
         end
 
         def check_user_events(object)
-          logger.debug("Event Notifications: Checking User Notification for #{self.name}.")
+          # logger.debug("Event Notifications: Checking User Notification for #{self.name}.")
           case object
           when Issue
             return true if default_notifier
@@ -104,7 +104,7 @@ module EventNotification
             return true  if (object.author == self) || is_or_belongs_to?(object.assigned_to) || is_or_belongs_to?(object.assigned_to_was)
             return false if !notified_projects_events(object.project).any?
 
-            logger.debug("Event Notifications: Issue.")
+            # logger.debug("Event Notifications: Issue.")
             event = object.is_issue_new_record? == 1 ? 'issue_added' : 'issue_updated'
             tracker_event = event.sub('issue') { object.tracker.name.downcase }
             events = notified_projects_events(object.project)
@@ -145,7 +145,7 @@ module EventNotification
         def notify_about_with_event?(object)
           return false if self.class.get_notification == false || User.current.ghost?
           if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
-            logger.debug("Event Notifications: Mail notification option #{mail_notification}")
+            logger.debug("Event Notifications: Mail notification option for #{self.name} : #{mail_notification} : #{object.class.name}")
             if mail_notification == 'all'
               true
             elsif mail_notification.blank? || mail_notification == 'none'

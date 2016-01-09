@@ -101,9 +101,11 @@ module EventNotification
             end
             notified += collect_involved_related_users
             # logger.debug("Event Notifications : Current users selected : #{ notified.map(&:name).join(", ") }")
-            notified =   notified.select {|u| u.active? && u.notify_about?(self)}
+            notified =   notified.uniq.select {|u| u.active? && u.notify_about?(self)}
             # logger.debug("Event Notifications : Current users after check : #{ notified.map(&:name).join(", ") }")
-            notified +=  project.notified_users_with_events(self)
+            notified += project.notified_users_with_events(self)
+
+            notified += [User.current] unless User.current.pref.no_self_notified
 
             notified.uniq!
             # Remove users that can not view the issue
