@@ -25,7 +25,7 @@ Redmine::Plugin.register :event_notifications do
   name 'Event Notifications plugin'
   author 'Rupesh J'
   description 'Customizes redmine project notification settings for every project event.'
-  version '3.2.0'
+  version '3.2.1'
   author_url 'mailto:rupeshj@esi-group.com'
 
   settings :default => {

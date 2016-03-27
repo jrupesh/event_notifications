@@ -42,7 +42,7 @@
 
 
 	<h4><%= l(:enable_notification_for_project_issue_categories)%></h4>
-	<% Project.includes(:issue_categories).all.order('lft ASC').each do |project|
+	<% Project.includes(:issue_categories).order('lft ASC').to_a.each do |project|
 		if project.issue_categories.any? %>
 			<p>
 			  <label><%= project.name %></label>
