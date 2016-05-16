@@ -18,9 +18,9 @@ zh:
   ev_status_updated: 状态已更新。
   ev_priority_updated: 优先级已更新。
 
-  enable_event_notifications_settings: 启用 Event Notification 插件。
-  enable_event_notifications_settings_description: 若启用，Email通知将发送到所选创建/更新事件时对应的收件人。
-  event_notifications_with_author: 通知选项
+  enable_event_notifications_settings: 启用 Event Notification 插件
+  enable_event_notifications_settings_description: 启用后，Email通知模块将允许用户自行定义每个项目的事件变更通知（入口位置：我的账号-Email通知配置）。
+  event_notifications_with_author: 作者相关通知选项
   event_notifications_with_author_default: 默认 <redmine@example.net>
   event_notifications_with_author_author: 作者名称 <author.email@example.net>
   event_notifications_with_author_authorname: 作者名称 <redmine@example.net>
@@ -32,27 +32,27 @@ zh:
   notice_failed_to_load_watchers: 不能加载跟踪者列表。
   notice_issue_not_found: 找不到问题。
 
-  enable_notification_for_issue_attributes: 问题字段变更通知
-  enable_notification_for_cf: 问题自定义字段
-  enable_notification_for_project_issue_categories: 项目问题类别
-  issue_fields_description: 勾选以启用问题字段变更时的通知。
+  enable_notification_for_issue_attributes: 问题自定义字段的变更通知
+  enable_notification_for_cf: 问题自定义字段列表
+  enable_notification_for_project_issue_categories: 含问题类别的项目列表
+  issue_fields_description: 勾选以启用问题自定义字段发生变更时的发送相关通知。
   label_cf_unchecked: 取消勾选
   label_cf_checked: 已勾选
   label_cf_toggled_off: 切换为关闭
   label_cf_toggled_on: 切换为打开
-  label_notify: Email通知
+  label_notify: Email通知配置
 
   label_ghost_mode: 幽灵模式
-  warning_ghost_mode: "您当前正处于【幽灵模式】，您的问题更新时将不会被记录和通知。"
-  text_user_mail_event_notification: "对于未选中的项目，您只能接收到您关注和参与的问题的通知信息。（例如：作者/指派对象/自定义字段是你的相关问题）。"
+  warning_ghost_mode: "您当前正处于【幽灵模式】，您的问题在更新时将不会被记录和通知。"
+  text_user_mail_event_notification: "对于未选中的项目，您只能接收到您关注和参与的问题的通知信息。（例如：作者/指派对象/自定义字段配置给你的相关问题）。"
 
   label_issue_involved_notified: 启用涉及问题变更的通知。
-  label_issue_involved_in_related_notified: 启用涉及问题关联的通知。
+  label_issue_involved_in_related_notified: 问题关联关系通知
   label_involved_in_related_notified: 当我涉及或参与的问题发生变更时通知我。
-  label_attachment_notification: 当问题添加附件时通知我。
+  label_attachment_notification: 当问题附件变更时通知我。
   label_relation_notification: 当问题关联关系发生变更时通知我。
-  text_relation_notification: 若未选中，则仅在问题添加受阻于关系时通知。
-  label_issue_relation_attachment_notified: 问题的附件及关联关系变更通知。
+  text_relation_notification: 若未选中，则仅在问题变更【阻挡】/【被阻挡】关系时发起通知。
+  label_issue_relation_attachment_notified: 启用问题附件及关联关系变更通知
 
   field_disable_notification: 禁用通知
   
