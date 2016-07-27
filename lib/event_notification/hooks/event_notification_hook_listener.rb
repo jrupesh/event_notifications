@@ -10,13 +10,23 @@ module EventNotification
         s.html_safe
       end
 
-      def view_my_account_preferences(context={})
+      def view_users_form_preferences(context={})
+        return ''.html_safe unless User.current.admin?
         user  = context[:user]
         f     = context[:form]
-        s     = ''
+        ghost_mode_html(user)
+      end
 
-        return s.html_safe unless User.current.admin?
+      def view_my_account_preferences(context={})
+        return ''.html_safe unless User.current.admin?
+        user  = context[:user]
+        f     = context[:form]
 
+        ghost_mode_html(user)
+      end
+
+      def ghost_mode_html(user)
+        s = ''
         s << "<p>"
         s << label_tag( "pref_ghost_mode", l(:label_ghost_mode) )
         s << hidden_field_tag( "pref[ghost_mode]", "0" )

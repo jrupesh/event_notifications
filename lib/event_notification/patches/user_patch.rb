@@ -33,7 +33,7 @@ module EventNotification
         end
 
         def ghost?
-          self.admin? && self.pref[:ghost_mode] == '1'
+          self.pref[:ghost_mode] == '1'
         end
 
         def notified_project_ids_with_events=(ids)

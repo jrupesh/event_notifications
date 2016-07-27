@@ -16,7 +16,7 @@ module EventNotification
 
       module InstanceMethods
         def create_journal_with_ghost
-          return unless !User.current.ghost?
+          current_journal.notify= false if User.current.ghost? && current_journal
           create_journal_without_ghost
         end
 
@@ -69,7 +69,7 @@ module EventNotification
                 notified << issue.author
               end
 
-              if issue.assigned_to && issue.assigned_to.active? && %w( all selected ).include?( issue.author.mail_notification ) &&
+              if issue.assigned_to && !issue.assigned_to.is_a?(Group) && issue.assigned_to.active? && %w( all selected ).include?( issue.author.mail_notification ) &&
                   issue.assigned_to.pref[:involved_in_related_notified] == '1'
                 # logger.debug("Event Notifications : Other issue #{issue.id} Assignee involved : #{issue.assigned_to}.")
                 notified << issue.assigned_to
