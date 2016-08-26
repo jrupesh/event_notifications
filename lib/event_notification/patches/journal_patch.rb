@@ -8,7 +8,7 @@ module EventNotification
         base.class_eval do
           unloadable
           before_save         :set_issue_updated_options
-          alias_method_chain  :notified_users, :events
+          # alias_method_chain  :notified_users, :events
         end
       end
 
@@ -52,22 +52,22 @@ module EventNotification
           logger.debug("Event Notifications: Set variable for Journal : Attachment or Relations.")
         end
 
-        def notified_users_with_events
-          return [] if User.current.ghost? || User.get_notification == false
-          if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
-            logger.debug("Event Notifications: Notified Users : For journal save.")
+        # def notified_users_with_events
+        #   return [] if User.current.ghost? || User.get_notification == false
+        #   if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
+        #     logger.debug("Event Notifications: Notified Users : For journal save.")
 
-            notified = journalized.notified_users
-            notified = notified.select {|u| u.active?}
-            notified.uniq!
-            if private_notes?
-              notified = notified.select {|user| user.allowed_to?(:view_private_notes, journalized.project)}
-            end
-            notified
-          else
-            notified_users_without_events
-          end
-        end
+        #     notified = journalized.notified_users
+        #     # notified = notified.select {|u| u.active?}
+        #     notified.uniq!
+        #     if private_notes?
+        #       notified = notified.select {|user| user.allowed_to?(:view_private_notes, journalized.project)}
+        #     end
+        #     notified
+        #   else
+        #     notified_users_without_events
+        #   end
+        # end
       end
     end
   end

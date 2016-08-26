@@ -21,11 +21,15 @@ ActionDispatch::Callbacks.to_prepare do
   require_dependency 'event_notification/hooks/event_notification_hook_listener'
 end
 
+Rails.configuration.to_prepare do
+  require 'event_notification/patches/acts_as_watchable_patch'    
+end
+
 Redmine::Plugin.register :event_notifications do
   name 'Event Notifications plugin'
   author 'Rupesh J'
   description 'Customizes redmine project notification settings for every project event.'
-  version '3.2.1'
+  version '2.3.0'
   author_url 'mailto:rupeshj@esi-group.com'
 
   settings :default => {

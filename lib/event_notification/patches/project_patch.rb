@@ -7,11 +7,24 @@ module EventNotification
 
         base.class_eval do
           unloadable
+          store :format_store
+
+          safe_attributes :notify_non_member,
+            :if => lambda {|project, user| project.new_record? || user.allowed_to?(:edit_project, project) }
+
           alias_method_chain :notified_users, :events
         end
       end
 
       module InstanceMethods
+        def notify_non_member
+          format_store[:notify_non_member] == '1'
+        end
+
+        def notify_non_member=(val)
+          format_store[:notify_non_member] = val
+        end
+        
         def notified_users_with_events(object=nil)
           return [] if User.current.ghost? || User.get_notification == false
           if !object.nil? && Setting.plugin_event_notifications["enable_event_notifications"] == "on"

@@ -80,7 +80,7 @@ module EventNotification
                 custom_field_users << cv.value.to_i unless cv.value.nil?
               end
             end
-            notified += User.where(:id => custom_field_users).select { |u| u.pref[:involved_in_related_notified] == '1' } if custom_field_users.any?
+            notified += User.active.where(:id => custom_field_users).select { |u| u.pref[:involved_in_related_notified] == '1' } if custom_field_users.any?
           end
           notified.each { |u| u.default_notifier=(true) }
           notified
@@ -109,7 +109,7 @@ module EventNotification
 
             notified.uniq!
             # Remove users that can not view the issue
-            notified.reject! {|user| !visible?(user)}
+            notified.reject! {|user| !visible?(user)} unless project.notify_non_member
             notified
           else
             notified_users_without_events

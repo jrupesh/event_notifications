@@ -44,6 +44,14 @@ module EventNotification
         s << "</p>"
         s.html_safe
       end
+
+      def view_projects_form(context = { })
+        s = ""
+        f = context[:form]
+        project = context[:project]
+        s << content_tag(:p, f.check_box(:notify_non_member))
+        s.html_safe
+      end      
     end
   end
 end
