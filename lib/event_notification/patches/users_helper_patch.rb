@@ -105,7 +105,7 @@ module EventNotification
                           :id => nil) + ' ' + (cf_obj.edit_tag_style == 'check_box' ?
                                     "#{cf_obj.name} #{l(:label_cf_unchecked)}" :
                                     "#{cf_obj.name} #{l(:label_cf_toggled_off)}") , :class => cssenable ? "#{cssclass[var]} event_#{project.id}" : "")
-
+                var = var == 0 ? 1 : 0
                 s << content_tag('label',
                         check_box_tag(
                           html_id,
