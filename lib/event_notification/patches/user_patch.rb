@@ -167,6 +167,7 @@ module EventNotification
                   object.author == self
                 end
               when News, Journal, Message, Document, WikiContent
+                return false if mail_notification == 'only_assigned' || ( %w(only_my_events only_owner).include?(mail_notification) && object.author != self )
                 notified_projects_events(object.project).any? && check_user_events(object)
               end
             end

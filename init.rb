@@ -14,6 +14,7 @@ require 'event_notification/patches/groups_controller_patch'
 require 'event_notification/patches/principal_memberships_controller_patch'
 require 'event_notification/patches/user_preference_patch'
 require 'event_notification/patches/custom_field_patch'
+require 'event_notification/patches/news_patch'
 
 require 'event_notification/patches/mailer_patch'
 
