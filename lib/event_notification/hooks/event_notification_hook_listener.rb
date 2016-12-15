@@ -7,6 +7,7 @@ module EventNotification
       def view_layouts_base_html_head(context={})
         s = ''
         s << content_tag('div', l(:warning_ghost_mode), :class => 'flash warning') if User.current.ghost?
+        s << content_tag('div', l(:warning_admin_ghost_mode), :class => 'flash error nodata') if User.current.admin_ghost?
         s.html_safe
       end
 
@@ -31,6 +32,12 @@ module EventNotification
         s << label_tag( "pref_ghost_mode", l(:label_ghost_mode) )
         s << hidden_field_tag( "pref[ghost_mode]", "0" )
         s << check_box_tag( "pref[ghost_mode]", "1", user.pref.ghost_mode == "1", :id => 'pref_ghost_mode' )
+        s << "</p>"
+
+        s << "<p title='#{l(:label_admin_ghost_tooltip)}' style='color: red; border-bottom: 1px dotted #aaa; cursor: help;'>"
+        s << label_tag( "pref_admin_ghost_mode", l(:label_admin_ghost_mode), :style => 'cursor: help;')
+        s << hidden_field_tag( "pref[admin_ghost_mode]", "0" )
+        s << check_box_tag( "pref[admin_ghost_mode]", "1", user.pref.admin_ghost_mode == "1", :id => 'pref_admin_ghost_mode' )
         s << "</p>"
         s.html_safe
       end

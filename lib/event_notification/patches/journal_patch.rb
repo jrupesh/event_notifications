@@ -46,6 +46,7 @@ module EventNotification
           @only_attachments = details.length == attachment_cnt  ? true : false
           @only_relations   = details.length == relation_cnt    ? true : false
           # Disable notification when only Custom field with disabled notification is updated.
+          self.notify= false if User.current.admin_ghost?
           if notify?
             self.notify= details.length == cus_field_cnt ? false : true
           end

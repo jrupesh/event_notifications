@@ -13,7 +13,7 @@ module EventNotification
       module InstanceMethods
         def preview_watchers
           @issue = Issue.find(params[:id]) if @issue.nil? & params[:id].present?
-          if !@issue.nil?
+          if @issue.present?
             @project = @issue.project
           else
             render_403 :message => :notice_issue_not_found

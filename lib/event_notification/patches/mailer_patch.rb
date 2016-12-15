@@ -48,10 +48,11 @@ module EventNotification
           end
 
           if @message_id_object
-            headers[:message_id] = "<#{self.class.message_id_for(@message_id_object)}>"
+            headers[:message_id] = @message_id_object.is_a?(Issue) ? @references_objects.collect {|o| "<#{self.class.references_for(o)}>"}.join(' ') : "<#{self.class.message_id_for(@message_id_object)}>"
           end
-          if @references_objects
+          if @references_objects && !@message_id_object.is_a?(Issue)
             headers[:references] = @references_objects.collect {|o| "<#{self.class.references_for(o)}>"}.join(' ')
+            headers['In-Reply-To'] = @references_objects.collect {|o| "<#{self.class.references_for(o)}>"}.join(' ')
           end
 
           m = if block_given?

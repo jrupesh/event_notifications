@@ -13,7 +13,7 @@ module EventNotification
 
       module InstanceMethods
         def notified_watchers_with_events
-          return [] if User.current.ghost? || User.get_notification == false
+          return [] if User.current.ghost? || User.current.admin_ghost? || User.get_notification == false
           if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
             notified = watcher_users.active.to_a
             notified.reject! {|user| user.mail.blank? || user.mail_notification == 'none'}

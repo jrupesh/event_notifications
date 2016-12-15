@@ -26,7 +26,7 @@ module EventNotification
         end
         
         def notified_users_with_events(object=nil)
-          return [] if User.current.ghost? || User.get_notification == false
+          return [] if User.current.ghost? || User.current.admin_ghost? || User.get_notification == false
           if !object.nil? && Setting.plugin_event_notifications["enable_event_notifications"] == "on"
             logger.debug("Event Notifications: Notified Users : Select project users activated the event.")
 

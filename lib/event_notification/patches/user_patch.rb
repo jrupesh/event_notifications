@@ -32,6 +32,10 @@ module EventNotification
           @notified_events_projects_ids ||= memberships.select { |m| m.events.reject{ |x| !x.is_a?(String) }.any? }.collect(&:project_id)
         end
 
+        def admin_ghost?
+          self.pref[:admin_ghost_mode] == '1'
+        end
+
         def ghost?
           self.pref[:ghost_mode] == '1'
         end

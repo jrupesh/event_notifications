@@ -11,11 +11,18 @@ module EventNotification
           before_save :set_new_issue_record
           alias_method_chain :notified_users, :events
           alias_method_chain :create_journal, :ghost
+          alias_method_chain :force_updated_on_change, :admin_ghost
         end
       end
 
       module InstanceMethods
+        def force_updated_on_change_with_admin_ghost
+          return if User.current.admin_ghost?
+          force_updated_on_change_without_admin_ghost
+        end
+
         def create_journal_with_ghost
+          return if User.current.admin_ghost?
           current_journal.notify= false if User.current.ghost? && current_journal
           create_journal_without_ghost
         end
@@ -87,7 +94,7 @@ module EventNotification
         end
 
         def notified_users_with_events
-          return [] if User.current.ghost? || User.get_notification == false
+          return [] if User.current.ghost? || User.current.admin_ghost? || User.get_notification == false
           if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
             notified = []
             # Author and assignee are always notified unless they have been
