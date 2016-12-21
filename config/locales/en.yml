@@ -49,6 +49,7 @@ en:
   warning_ghost_mode: "You are in 'Ghost' mode, none of your ticket updates will trigger a mail notification"
   warning_admin_ghost_mode: "You are in 'Phantom' mode, none of your ticket updates will trigger a mail notification, nor any journals will be created or ticket timestamped."
   label_admin_ghost_tooltip: "To be used for maintenance ONLY. Huge impact on users if checked."
+  error_admin_ghost_mode: Save failed due to ongoing maintenance. Please try to save after some time.
   text_user_mail_event_notification: "For unselected projects, you will only receive notifications about things you watch or you're involved in (eg. issues you're the author or assignee or user custom fields)."
 
   label_issue_involved_notified: Enable Issue involved notification.

@@ -8,6 +8,8 @@ module EventNotification
         base.class_eval do
           unloadable
 
+          validate :journal_admin_ghost, :if => Proc.new { |issue| !ActiveRecord::Base.record_timestamps && issue.current_journal.present? } 
+
           before_save :set_new_issue_record
           alias_method_chain :notified_users, :events
           alias_method_chain :create_journal, :ghost
@@ -16,6 +18,10 @@ module EventNotification
       end
 
       module InstanceMethods
+        def journal_admin_ghost
+          errors.add :base, l(:error_admin_ghost_mode)
+        end
+
         def force_updated_on_change_with_admin_ghost
           return if User.current.admin_ghost?
           force_updated_on_change_without_admin_ghost
@@ -106,6 +112,9 @@ module EventNotification
             if assigned_to_was
               notified += (assigned_to_was.is_a?(Group) ? assigned_to_was.users : [assigned_to_was])
             end
+            # Collect users of User custom fields
+            notified += User.where( :id => available_custom_fields.select {|f| f.field_format == 'user'}.map { |cf| custom_field_value(cf) }.reject(&:blank?).flatten ).to_a.each { |u| u.default_notifier=(true) }
+
             notified += collect_involved_related_users
             # logger.debug("Event Notifications : Current users selected : #{ notified.map(&:name).join(", ") }")
             notified =   notified.uniq.select {|u| u.active? && u.notify_about?(self)}

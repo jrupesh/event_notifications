@@ -34,6 +34,8 @@ module EventNotification
         s << check_box_tag( "pref[ghost_mode]", "1", user.pref.ghost_mode == "1", :id => 'pref_ghost_mode' )
         s << "</p>"
 
+        return s.html_safe unless user.admin?
+
         s << "<p title='#{l(:label_admin_ghost_tooltip)}' style='color: red; border-bottom: 1px dotted #aaa; cursor: help;'>"
         s << label_tag( "pref_admin_ghost_mode", l(:label_admin_ghost_mode), :style => 'cursor: help;')
         s << hidden_field_tag( "pref[admin_ghost_mode]", "0" )
