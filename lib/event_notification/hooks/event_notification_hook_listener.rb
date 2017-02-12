@@ -7,7 +7,15 @@ module EventNotification
       def view_layouts_base_html_head(context={})
         s = ''
         s << content_tag('div', l(:warning_ghost_mode), :class => 'flash warning') if User.current.ghost?
-        s << content_tag('div', l(:warning_admin_ghost_mode), :class => 'flash error nodata') if User.current.admin_ghost?
+        if User.current.admin_ghost?
+          s << content_tag('div', l(:warning_admin_ghost_mode), :class => 'flash error nodata')
+        elsif !ActiveRecord::Base.record_timestamps
+          s << content_tag('div', l(:warning_admin_ghost_mode_users), :class => 'flash error nodata')
+          s << javascript_tag("function disableallInputs(){
+              $('input, textarea, select').prop('disabled', true);
+            };
+            $(document).ready(disableallInputs);")
+        end
         s.html_safe
       end
 
@@ -60,7 +68,7 @@ module EventNotification
         project = context[:project]
         s << content_tag(:p, f.check_box(:notify_non_member))
         s.html_safe
-      end      
+      end
     end
   end
 end

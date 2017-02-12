@@ -8,7 +8,7 @@ module EventNotification
         base.class_eval do
           unloadable
 
-          validate :journal_admin_ghost, :if => Proc.new { |issue| !ActiveRecord::Base.record_timestamps && issue.current_journal.present? } 
+          validate :journal_admin_ghost, :if => Proc.new { |issue| !ActiveRecord::Base.record_timestamps && issue.current_journal.present? && !User.current.admin_ghost? } 
 
           before_save :set_new_issue_record
           alias_method_chain :notified_users, :events

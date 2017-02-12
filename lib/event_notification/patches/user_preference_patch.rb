@@ -22,7 +22,9 @@ module EventNotification
           self[:ghost_mode]=enabled
         end
 
-        def admin_ghost_mode; self[:admin_ghost_mode] end
+        def admin_ghost_mode
+          ActiveRecord::Base.record_timestamps == true ? '0' : self[:admin_ghost_mode]
+        end
 
         def admin_ghost_mode=(enabled)
           return unless User.current.admin?
