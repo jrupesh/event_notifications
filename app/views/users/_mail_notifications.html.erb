@@ -29,8 +29,8 @@
                '1',
                bool_val,
                html_opts
-               ) + ' ' + h(project.name)
-          ) +  render_project_events_lists(project, bool_val)
+               ) + ' ' + h(project.name),
+          :class => 'maileventproject') +  render_project_events_lists(project, bool_val)
         else
           value = project.id
           html_opts = { :id => nil }
