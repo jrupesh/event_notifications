@@ -33,7 +33,7 @@ module EventNotification
         end
 
         def admin_ghost?
-          self.pref[:admin_ghost_mode] == '1' && ActiveRecord::Base.record_timestamps == false
+          self.pref[:admin_ghost_mode] == '1' && Issue.record_timestamps == false
         end
 
         def ghost?
