@@ -13,73 +13,73 @@ module EventNotification
 
           define_method(:mail) do |headers={}, &block|
             headers.reverse_merge! 'X-Mailer' => 'Redmine',
-                    'X-Redmine-Host' => Setting.host_name,
-                    'X-Redmine-Site' => Setting.app_title,
-                    'X-Auto-Response-Suppress' => 'All',
-                    'Auto-Submitted' => 'auto-generated',
-                    'From' => redmine_from,
-                    'List-Id' => "<#{Setting.mail_from.to_s.gsub('@', '.')}>"
+                                   'X-Redmine-Host' => Setting.host_name,
+                                   'X-Redmine-Site' => Setting.app_title,
+                                   'X-Auto-Response-Suppress' => 'All',
+                                   'Auto-Submitted' => 'auto-generated',
+                                   'From' => redmine_from,
+                                   'List-Id' => "<#{Setting.mail_from.to_s.gsub('@', '.')}>"
 
-          # Replaces users with their email addresses
-          [:to, :cc, :bcc].each do |key|
-            if headers[key].present?
-              headers[key] = self.class.email_addresses(headers[key])
+            # Replaces users with their email addresses
+            [:to, :cc, :bcc].each do |key|
+              if headers[key].present?
+                headers[key] = self.class.email_addresses(headers[key])
+              end
             end
-          end
 
-          # Removes the author from the recipients and cc
-          # if the author does not want to receive notifications
-          # about what the author do
-          if @author && @author.logged? && @author.pref.no_self_notified
-            addresses = @author.mails
-            headers[:to] -= addresses if headers[:to].is_a?(Array)
-            headers[:cc] -= addresses if headers[:cc].is_a?(Array)
-          end
-
-          if @author && @author.logged?
-            redmine_headers 'Sender' => @author.login
-          end
-
-          # Blind carbon copy recipients
-          if Setting.bcc_recipients?
-            headers[:bcc] = [headers[:to], headers[:cc]].flatten.uniq.reject(&:blank?)
-            headers[:to] = nil
-            headers[:cc] = nil
-          end
-
-          # if @message_id_object
-          #   headers[:message_id] = @message_id_object.is_a?(Issue) ? @references_objects.collect {|o| "<#{self.class.references_for(o)}>"}.join(' ') : "<#{self.class.message_id_for(@message_id_object)}>"
-          # end
-          # if @references_objects && !@message_id_object.is_a?(Issue)
-          #   headers[:references] = @references_objects.collect {|o| "<#{self.class.references_for(o)}>"}.join(' ')
-          #   headers['In-Reply-To'] = @references_objects.collect {|o| "<#{self.class.references_for(o)}>"}.join(' ')
-          # end
-
-          if @message_id_object
-            headers[:message_id] = "<#{self.class.message_id_for(@message_id_object)}>"
-          end
-          if @references_objects
-            headers[:references] = @references_objects.collect {|o| "<#{self.class.references_for(o)}>"}.join(' ')
-          end
-
-          m = if block_given?
-            super headers, &block
-          else
-            super headers do |format|
-              format.text
-              format.html unless Setting.plain_text_mail?
+            # Removes the author from the recipients and cc
+            # if the author does not want to receive notifications
+            # about what the author do
+            if @author && @author.logged? && @author.pref.no_self_notified
+              addresses = @author.mails
+              headers[:to] -= addresses if headers[:to].is_a?(Array)
+              headers[:cc] -= addresses if headers[:cc].is_a?(Array)
             end
-          end
-          set_language_if_valid @initial_language
 
-          Rails.logger.info(" --------------------------- ")
-          Rails.logger.debug("Event Notifications: Mailer patch.")
-          # Rails.logger.info("Mail to : #{ headers[:to].is_a?(Array) ? headers[:to] : :to }")
-          # Rails.logger.info("Mail cc : #{ headers[:cc].is_a?(Array) ? headers[:cc] : :cc }")
-          Rails.logger.info("Mail bcc: #{ headers[:bcc].is_a?(Array) ? headers[:bcc] : :bcc }")
-          Rails.logger.info(" --------------------------- ")
+            if @author && @author.logged?
+              redmine_headers 'Sender' => @author.login
+            end
 
-          m
+            # Blind carbon copy recipients
+            if Setting.bcc_recipients?
+              headers[:bcc] = [headers[:to], headers[:cc]].flatten.uniq.reject(&:blank?)
+              headers[:to] = nil
+              headers[:cc] = nil
+            end
+
+            # if @message_id_object
+            #   headers[:message_id] = @message_id_object.is_a?(Issue) ? @references_objects.collect {|o| "<#{self.class.references_for(o)}>"}.join(' ') : "<#{self.class.message_id_for(@message_id_object)}>"
+            # end
+            # if @references_objects && !@message_id_object.is_a?(Issue)
+            #   headers[:references] = @references_objects.collect {|o| "<#{self.class.references_for(o)}>"}.join(' ')
+            #   headers['In-Reply-To'] = @references_objects.collect {|o| "<#{self.class.references_for(o)}>"}.join(' ')
+            # end
+
+            if @message_id_object
+              headers[:message_id] = "<#{self.class.message_id_for(@message_id_object)}>"
+            end
+            if @references_objects
+              headers[:references] = @references_objects.collect {|o| "<#{self.class.references_for(o)}>"}.join(' ')
+            end
+
+            m = if block_given?
+                  super headers, &block
+                else
+                  super headers do |format|
+                    format.text
+                    format.html unless Setting.plain_text_mail?
+                  end
+                end
+            set_language_if_valid @initial_language
+
+            Rails.logger.info(" --------------------------- ")
+            Rails.logger.debug("Event Notifications: Mailer patch.")
+            # Rails.logger.info("Mail to : #{ headers[:to].is_a?(Array) ? headers[:to] : :to }")
+            # Rails.logger.info("Mail cc : #{ headers[:cc].is_a?(Array) ? headers[:cc] : :cc }")
+            Rails.logger.info("Mail bcc: #{ headers[:bcc].is_a?(Array) ? headers[:bcc] : :bcc }")
+            Rails.logger.info(" --------------------------- ")
+
+            m
           end
         end
       end
@@ -88,46 +88,46 @@ module EventNotification
       end
 
       module InstanceMethods
-  	    def attachments_added_with_events(attachments)
-  	    	if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
-  			    container = attachments.first.container
-  			    added_to = ''
-  			    added_to_url = ''
-  			    @author = attachments.first.author
-  			    case container.class.name
-  			    when 'Project'
-  			      added_to_url = url_for(:controller => 'files', :action => 'index', :project_id => container)
-  			      added_to = "#{l(:label_project)}: #{container}"
-  			      recipients = container.project.notified_users(container).select {|user| user.allowed_to?(:view_files, container.project)}.collect  {|u| u.mail}
-  			    when 'Version'
-  			      added_to_url = url_for(:controller => 'files', :action => 'index', :project_id => container.project)
-  			      added_to = "#{l(:label_version)}: #{container.name}"
-  			      recipients = container.project.notified_users(container).select {|user| user.allowed_to?(:view_files, container.project)}.collect  {|u| u.mail}
-  			    when 'Document'
-  			      added_to_url = url_for(:controller => 'documents', :action => 'show', :id => container.id)
-  			      added_to = "#{l(:label_document)}: #{container.title}"
-  			      recipients = container.notified_users
-  			    end
-  			    redmine_headers 'Project' => container.project.identifier
-  			    @attachments = attachments
-  			    @added_to = added_to
-  			    @added_to_url = added_to_url
-  			    mail :to => recipients,
-  			      :subject => "[#{container.project.name}] #{l(:label_attachment_new)}"
-  		    else
-  		    	attachments_added_without_events(attachments)
-  		    end
+        def attachments_added_with_events(attachments)
+          if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
+            container = attachments.first.container
+            added_to = ''
+            added_to_url = ''
+            @author = attachments.first.author
+            case container.class.name
+              when 'Project'
+                added_to_url = url_for(:controller => 'files', :action => 'index', :project_id => container)
+                added_to = "#{l(:label_project)}: #{container}"
+                recipients = container.project.notified_users(container).select {|user| user.allowed_to?(:view_files, container.project)}.collect  {|u| u.mail}
+              when 'Version'
+                added_to_url = url_for(:controller => 'files', :action => 'index', :project_id => container.project)
+                added_to = "#{l(:label_version)}: #{container.name}"
+                recipients = container.project.notified_users(container).select {|user| user.allowed_to?(:view_files, container.project)}.collect  {|u| u.mail}
+              when 'Document'
+                added_to_url = url_for(:controller => 'documents', :action => 'show', :id => container.id)
+                added_to = "#{l(:label_document)}: #{container.title}"
+                recipients = container.notified_users
+            end
+            redmine_headers 'Project' => container.project.identifier
+            @attachments = attachments
+            @added_to = added_to
+            @added_to_url = added_to_url
+            mail :to => recipients,
+                 :subject => "[#{container.project.name}] #{l(:label_attachment_new)}"
+          else
+            attachments_added_without_events(attachments)
+          end
         end
 
         def redmine_from
           return Setting.mail_from if @author.nil?
           case Setting.plugin_event_notifications["event_notifications_with_author"]
-          when "author"
-            "\"#{@author.name} [REDMINE]\" <#{@author.mail}>"
-          when "authorname"
-            "\"#{@author.name} [REDMINE]\" <#{Setting.mail_from.sub(/.*?</, '').gsub(">", "")}>"
-          else
-            Setting.mail_from
+            when "author"
+              "\"#{@author.name} [REDMINE]\" <#{@author.mail}>"
+            when "authorname"
+              "\"#{@author.name} [REDMINE]\" <#{Setting.mail_from.sub(/.*?</, '').gsub(">", "")}>"
+            else
+              Setting.mail_from
           end
         end
 
@@ -145,7 +145,7 @@ module EventNotification
             @news_url = url_for(:controller => 'news', :action => 'show', :id => news)
           end
           mail :to => users.map(&:mail),
-           :subject => "[#{news.project.name}] #{subject}: #{comment.author} mentioned you in a note."
+               :subject => "[#{news.project.name}] #{subject}: #{comment.author} mentioned you in a note."
         end
 
         def quality_tree_comment_notifiers(comment,users,subject="")
@@ -164,7 +164,30 @@ module EventNotification
             @news_url = signin_path
           end
           mail :bcc => users.map(&:mail),
-           :subject => "[#{news.project.name}] #{subject}: #{comment.author} added a note."
+               :subject => "[#{news.project.name}] #{subject}: #{comment.author} added a note."
+        end
+
+        def watcher_added(watcher, current_user)
+          @watcher = watcher
+          @watchable = watcher.watchable
+          @current_user = current_user
+          if @watchable.respond_to?(:project)
+            @project = @watchable.project
+            redmine_headers 'Project' => @watchable.project.identifier
+          end
+
+          message_id @watchable
+          references @watchable
+
+          @watchable_url = if @watchable.is_a?(Issue)
+                             url_for(:controller => 'issues', :action => 'show', :id => @watchable)
+                           else
+                             # @watchable_url = polymorphic_path(watcher)
+                             nil
+                           end
+
+          mail :to => [@watcher.user.mail],
+               :subject => l(:label_watcher_mailer, author: @current_user, watcher: @watcher.user)
         end
       end
     end

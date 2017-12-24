@@ -22,6 +22,7 @@ en:
 
   enable_event_notifications_settings: Enable Event notification plugin.
   enable_event_notifications_settings_description: If true; emails are sent to receipients on creation or updation of events checked by user.
+  enable_watcher_notification: Notifiy watcher when added
   event_notifications_with_author: Notification Options
   event_notifications_with_author_default: Default <redmine@example.net>
   event_notifications_with_author_author: Author Name <author.email@example.net>
@@ -33,6 +34,9 @@ en:
   label_issue_automatic_watchers: Automatic watchers
   notice_failed_to_load_watchers: Failed to load watchers
   notice_issue_not_found: Issue not found
+  label_watcher_mailer: "%{author} added you as watcher."
+  label_watcher_issue: "%{author} added %{watcher} as watcher to %{issue}"
+  label_watcher_other: "%{author} added %{watcher} as watcher to %{id}(%{classname})"
 
   enable_notification_for_issue_attributes: Issue fields notifications
   enable_notification_for_cf: Issue custom fields

@@ -1,0 +1,17 @@
+<% if @watchable.is_a?(Issue) %>
+  <%= "#{@watchable.tracker.name} ##{@watchable.id}: #{@watchable.subject}" %>
+  <%= @watchable_url %>
+
+  <%= render_email_issue_attributes(@watchable, @watcher.user) %>
+  ----------------------------------------
+  <%= @watchable.description %>
+
+  <% if @watchable.attachments.any? -%>
+    ---<%= l(:label_attachment_plural).ljust(37, '-') %>
+    <% @watchable.attachments.each do |attachment| -%>
+      <%= attachment.filename %> (<%= number_to_human_size(attachment.filesize) %>)
+    <% end -%>
+  <% end -%>
+<% else %>
+  <%= l(:label_watcher_other, author: @current_user, watcher: @watcher.user, id: @watchable.id, classname: @watchable.class.name) %>
+<% end %>

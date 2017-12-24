@@ -15,6 +15,7 @@ require 'event_notification/patches/principal_memberships_controller_patch'
 require 'event_notification/patches/user_preference_patch'
 require 'event_notification/patches/custom_field_patch'
 require 'event_notification/patches/news_patch'
+require 'event_notification/patches/watcher_patch'
 
 require 'event_notification/patches/mailer_patch'
 
@@ -23,7 +24,7 @@ ActionDispatch::Callbacks.to_prepare do
 end
 
 Rails.configuration.to_prepare do
-  require 'event_notification/patches/acts_as_watchable_patch'    
+  require 'event_notification/patches/acts_as_watchable_patch'
 end
 
 Redmine::Plugin.register :event_notifications do
@@ -39,6 +40,7 @@ Redmine::Plugin.register :event_notifications do
     'issue_category_notifications'      => [],
     'issue_involved_in_related_notified'=> nil,
     'issue_relation_attachment_notified'=> false,
-    'event_notifications_with_author'   => false },
+    'event_notifications_with_author'   => false,
+    'enable_watcher_notification'       => 0},
   	:partial => 'settings/event_notifications_settings'
 end
