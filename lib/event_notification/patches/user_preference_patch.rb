@@ -8,6 +8,8 @@ module EventNotification
 
         base.class_eval do
           unloadable
+          safe_attributes 'ghost_mode', 'admin_ghost_mode', 'involved_in_related_notified',
+                          'attachment_notification', 'relation_notification'
         end
       end
 
