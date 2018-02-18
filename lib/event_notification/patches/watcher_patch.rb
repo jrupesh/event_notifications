@@ -18,7 +18,7 @@ module EventNotification
         end
 
         def send_notification
-          if notify? && Setting.plugin_event_notifications["enable_event_notifications"] == "on" &&
+          if notify? && User.current != user && Setting.plugin_event_notifications["enable_event_notifications"] == "on" &&
               Setting.plugin_event_notifications["enable_watcher_notification"] == 'on' && user.mail.present? &&
               user.mail_notification != 'none'
 
