@@ -1,8 +1,9 @@
 module EventNotification
   module Hooks
     class EventNotificationHookListener < Redmine::Hook::ViewListener
-      render_on :view_groups_memberships_table_row, :partial => "groups/memberships_events"
-      render_on :view_groups_memberships_table_header, :inline => "<th/>"
+      render_on :view_groups_memberships_table_row, :partial => 'groups/memberships_events'
+      render_on :view_groups_memberships_table_header, :inline => '<th/>'
+      render_on :view_projects_form, :partial => 'hooks/view_project_form'
 
       def view_layouts_base_html_head(context={})
         s = ''
@@ -59,14 +60,6 @@ module EventNotification
         s << "<p>"
         s << f.check_box(:disable_notification)
         s << "</p>"
-        s.html_safe
-      end
-
-      def view_projects_form(context = { })
-        s = ""
-        f = context[:form]
-        project = context[:project]
-        s << content_tag(:p, f.check_box(:notify_non_member))
         s.html_safe
       end
     end
