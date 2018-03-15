@@ -71,6 +71,9 @@
       <em class="info"><%= l(:text_relation_notification) %></em>
     </p>
   <% end %>
+
+  <%= call_hook(:view_my_account_notification_preferences, :user => @user, :form => pref_fields) %>
+
 <% end %>
 
 <p class="mobile-hide"><%= submit_tag l(:button_save) %></p>
