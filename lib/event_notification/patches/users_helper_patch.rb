@@ -17,7 +17,7 @@ module EventNotification
           s = ''
           if Setting.plugin_event_notifications["enable_event_notifications"] == "on"
             displaycontent = show == true ? "" : ", style='display:none;'"
-            s << "<fieldset class=\"box event_#{project.id}\"#{displaycontent}>"
+            s << "<fieldset class=\"box maileventlist event_#{project.id}\"#{displaycontent}>"
 
             cssclass = ["splitcontentleft","splitcontentright"]
             var = 0

@@ -17,6 +17,7 @@ en:
   ev_note_added: note added.
   ev_status_updated: status changed.
   ev_priority_updated: priority changed.
+  ev_assigned_to_updated: assignee changed.
 
   field_notify_non_member: Notify non-members
 
