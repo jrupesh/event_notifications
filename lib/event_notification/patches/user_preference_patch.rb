@@ -1,3 +1,4 @@
+include Redmine::SafeAttributes
 module EventNotification
   module Patches
     module UserPreferencePatch
